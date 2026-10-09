@@ -5,7 +5,7 @@
   <p align="center">
     <a href="https://github.com/rebort-hub/FastApiWebAdmin-Pro.git"><img src="https://github.com/rebort-hub/FastApiWebAdmin-Pro/badge/star.svg?theme=dark"></a>
     <a href="https://github.com/rebort-hub/FastApiWebAdmin-Pro.git"><img src="https://github.com/rebort-hub/FastApiWebAdmin-Pro.git?style=social"></a>
-    <a href="https://github.com/rebort-hub/FastApiWebAdmin-Pro/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-MIT-orange"></a>
+    <a href="https://github.com/rebort-hub/FastApiWebAdmin-Pro/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-Apache-orange"></a>
     <img src="https://img.shields.io/badge/Python-3.10~3.12-blue">
     <img src="https://img.shields.io/badge/NodeJS-≥20.0-blue">
   </p>
@@ -18,21 +18,16 @@
 - 后端采用 <a href="https://fastapi.tiangolo.com/zh/">FastAPI</a>（现代、高性能异步框架） + <a href="https://swagger.io/docs/specification/about/">Swagger</a>（自动生成交互式API文档） + <a href="https://docs.pydantic.dev/2.5/">Pydantic</a>（强制类型约束） + <a href="https://docs.sqlalchemy.org/en/20/">SQLAlchemy 2.0</a>；
 - 前端采用 <a href="https://cn.vuejs.org/guide/introduction.html">Vue3</a> + <a href="https://antdv.com/docs/vue/introduce-cn">Ant Design Vue</a> + <a href="https://www.typescriptlang.org/">TypeScript</a> + <a href="https://vitejs.dev/">Vite</a> 等主流技术开发；
 - 权限认证使用（哈希）密码和 JWT Bearer 令牌的 OAuth2
-- 基于 RBAC 权限架构设计。支持加载动态权限菜单、按钮级别权限控制、数据级别权限控制
+- RBAC 权限架构设计。支持加载动态权限菜单、按钮级别权限控制、数据级别权限控制，业务模块开发热插拔
 - 开箱即用的中后台解决方案，方便企业开发者快速开发，可选择fastapiwebadmin，也可选择当前的FastApiWebAdmin-Pro
 
-如果觉得项目不错的话，欢迎大家 Star 支持一下！
 
+演示地址：http://jnstack.cn
 
 
 管理员账户：
 
 - 账号：admin
-- 密码：123456
-
-测试账户：
-
-- 账号：test
 - 密码：123456
 
 ## 安装和使用
