@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from typing import Optional, Dict
@@ -6,8 +6,8 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.security.utils import get_authorization_scheme_param
 from fastapi import Form, Request, status
 from passlib.context import CryptContext
-from app.core.config import settings
-from app.schemas.system import JWTPayload
+from app.config.setting import settings
+from app.api.v1.system.auth.schema import JWTPayload
 from app.core.exceptions import CustomException
 import jwt
 
@@ -64,7 +64,12 @@ def get_password_hash(password: str) -> str:
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return PwdContext.verify(plain_password, hashed_password)
+    from passlib.exc import UnknownHashError
+
+    try:
+        return PwdContext.verify(plain_password, hashed_password)
+    except UnknownHashError:
+        return False
 
 
 def create_jwt_token(payload: JWTPayload) -> str:

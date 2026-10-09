@@ -10,7 +10,7 @@
           <div class="content-title" style="font-size: 20px; font-weight: 500; color: rgba(0, 0, 0, 0.88); margin-bottom: 12px;"> 
             {{ timefix }}，{{ username }}<span class="welcome-text">，{{ welcome }}</span>
           </div>
-          <div style="color: rgba(0, 0, 0, 0.65);">开发工程师 | Fastapi-Vue-Admin团队 - 某某某事业群 - 某某技术部</div>
+          <div style="color: rgba(0, 0, 0, 0.65);">开发工程师 | Fastapi-Web-Admin-Pro团队 - 某某某事业群 - 某某技术部</div>
         </a-col>
       </a-row>
       <a-row class="extra-content" justify="space-around">

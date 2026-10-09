@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from starlette.middleware.cors import CORSMiddleware
 from starlette.types import ASGIApp
-from starlette.requests import Request
-from app.core.config import settings
+from starlette.requests import ClientDisconnect, Request
+from app.config.setting import settings
 from app.core.logger import logger
 from starlette.middleware.base import (
     Response,
@@ -28,7 +28,10 @@ class RequestLogMiddleware(BaseHTTPMiddleware):
             self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         start_time = time.time()
-        response = await call_next(request)
+        try:
+            response = await call_next(request)
+        except ClientDisconnect:
+            raise
         process_time = round(time.time() - start_time, 5)
         response.headers["X-Process-Time"] = str(process_time)
         self.write_request_log(request, response)

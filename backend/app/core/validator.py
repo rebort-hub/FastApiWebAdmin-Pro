@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from typing import Annotated, Optional, Union
@@ -29,7 +29,7 @@ def datetime_validator(value: Union[str, datetime]) -> Union[str, datetime, None
     return value
 
 
-# 实现自定义一个日期时间字符串的数据类型
+
 DateTimeStr = Annotated[
     datetime,
     AfterValidator(lambda x: x.strftime("%Y-%m-%d %H:%M:%S")),

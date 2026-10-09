@@ -98,7 +98,6 @@ import type { MenuProps, UploadChangeParam } from "ant-design-vue";
 import { UploadOutlined } from '@ant-design/icons-vue';
 import store from '@/store'
 import storage from 'store'
-import request from "@/utils/axios"
 import md5 from "md5"
 import { updateCurrentUserInfo, changeCurrentUserPassword } from '@/api/user'
 
@@ -161,15 +160,27 @@ export default {
       })
     };
 
+    const resolveFileUrl = (path: string) => {
+      if (!path) return path
+      if (path.startsWith('http://') || path.startsWith('https://')) return path
+      // 开发环境走 Vite 代理，使用相对路径即可访问 /api/files/...
+      return path.startsWith('/') ? path : `/${path}`
+    }
+
     const avatarHandleChange = (info: UploadChangeParam) => {
       if (info.file.status === 'done') {
-        const response = info.file.response;
-        const apiUrl = request.defaults.baseURL;
-        const newAvatar = apiUrl + '/' + response.data;
+        const response = info.file.response
+        const path = response?.data
+        if (!path || response?.code !== 200) {
+          message.error(response?.message || '上传失败')
+          return
+        }
+        const newAvatar = resolveFileUrl(path)
         infoFormState.avatar = newAvatar
-        message.success('上传成功');
+        store.commit('setAvatar', newAvatar)
+        message.success('上传成功')
       } else if (info.file.status === 'error') {
-        message.error('上传失败');
+        message.error('上传失败')
       }
     };
 
@@ -183,7 +194,7 @@ export default {
       infoFormState.deptName = basicInfo.dept_name;
       infoFormState.positions = basicInfo.positions.map(item => item.name);
       infoFormState.roles = basicInfo.roles.map(item => item.name);
-      infoFormState.avatar = basicInfo.avatar;
+      infoFormState.avatar = resolveFileUrl(basicInfo.avatar || '');
     }
 
     const initpasswordForm = () => {

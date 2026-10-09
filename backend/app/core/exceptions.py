@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from fastapi import Request, status
@@ -7,6 +7,7 @@ from starlette.responses import JSONResponse
 from starlette.exceptions import HTTPException
 from fastapi.exceptions import RequestValidationError
 from sqlalchemy.exc import SQLAlchemyError
+from starlette.requests import ClientDisconnect
 from app.core.logger import logger
 
 
@@ -65,6 +66,8 @@ async def AllExceptionHandler(request: Request, exc: Exception) -> JSONResponse:
     """
     捕获全部异常
     """
+    if isinstance(exc, ClientDisconnect):
+        raise exc
     print("请求地址", request.url.__str__(), exc.__str__())
     logger.error(exc.__str__())
     return ErrorResponse(msg="接口异常", code=500, status_code=500)

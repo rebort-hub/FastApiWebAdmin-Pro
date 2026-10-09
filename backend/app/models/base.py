@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import Column, BIGINT, Text, DateTime, ForeignKey
@@ -19,7 +19,7 @@ class CustomMixin(TimestampMixin):
     自定义公共 ORM 模型
     """
 
-    id = Column(BIGINT, primary_key=True, autoincrement=True, unique=True, comment='主键ID', nullable=False)
+    id = Column(BIGINT, primary_key=True, autoincrement=True, comment='主键ID', nullable=False)
     description = Column(Text, nullable=True, comment="备注")
 
     @declared_attr

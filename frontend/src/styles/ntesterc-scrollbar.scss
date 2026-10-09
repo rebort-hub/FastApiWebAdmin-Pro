@@ -1,0 +1,38 @@
+/* 全局滚动条：宽/高 4px */
+:root {
+  --ntesterc-scrollbar-size: 4px;
+  --ntesterc-scrollbar-thumb: rgba(0, 0, 0, 0.22);
+  --ntesterc-scrollbar-thumb-hover: rgba(0, 0, 0, 0.35);
+}
+
+[data-ntesterc-theme='dark'] {
+  --ntesterc-scrollbar-thumb: rgba(255, 255, 255, 0.22);
+  --ntesterc-scrollbar-thumb-hover: rgba(255, 255, 255, 0.35);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ntesterc-scrollbar-thumb) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: var(--ntesterc-scrollbar-size);
+  height: var(--ntesterc-scrollbar-size);
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--ntesterc-scrollbar-thumb);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--ntesterc-scrollbar-thumb-hover);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}

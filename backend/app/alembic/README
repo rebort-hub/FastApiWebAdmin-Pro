@@ -1,0 +1,8 @@
+Generic single-database configuration for Alembic.
+  uv run python main.py revision -m "描述变更"
+  uv run python main.py upgrade
+  uv run python main.py current
+  uv run alembic -c alembic.ini revision --autogenerate -m "描述"
+  uv run alembic -c alembic.ini upgrade head
+
+

@@ -65,7 +65,7 @@
         </div>
 
         <div style="margin-top: 15px;">
-          <a-table :rowKey="record => record.id" :columns="menuColumns" :data-source="menuTreeData" :row-selection="menuRowSelection":loading="tableLoading" 
+          <NtestercTable :rowKey="record => record.id" :columns="menuColumns" :data-source="menuTreeData" :row-selection="menuRowSelection" :loading="tableLoading" 
             :scroll="{ x: 500, y: 'calc(100vh - 270px)' }" :pagination="false" :style="{ minHeight: '700px'  }">
             <template v-slot:bodyCell="{ column, record, index }">
               <template v-if="column.dataIndex === 'type'">
@@ -78,7 +78,7 @@
                 </span>
               </template>
             </template>
-          </a-table>
+          </NtestercTable>
         </div>
       </div>
     </div>
@@ -99,6 +99,7 @@ import { message } from 'ant-design-vue';
 import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 import type { tableDataType, permissionDataType, permissionDeptType, permissionMenuType } from './types'
 import type { TableColumnsType } from 'ant-design-vue';
+import NtestercTable from '@/components/ntesterc/NtestercTable.vue';
 
 const openDrawer = ref(false);
 const permissionState = ref<permissionDataType>();

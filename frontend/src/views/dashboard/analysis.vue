@@ -237,7 +237,14 @@
               </a-col>
             </a-row>
             <div style="margin-top: 10px;">
-              <a-table row-key="index" size="small" :columns="searchColumns" :data-source="searchData" :pagination="{ pageSize: 5 }">
+              <NtestercTable
+                row-key="index"
+                size="small"
+                :columns="searchColumns"
+                :data-source="searchData"
+                :pagination="searchTablePagination"
+                @change="onSearchTablePageChange"
+              >
                 <template v-slot:bodyCell="{ column, record }">
                   <template v-if="column.dataIndex === 'keyword'">
                       <a>{{ record.keyword }}</a>
@@ -253,7 +260,7 @@
                         </span>
                   </template>
                 </template>
-              </a-table>
+              </NtestercTable>
             </div>
           </a-skeleton>
         </a-card>
@@ -296,6 +303,7 @@
 import { ref, reactive } from 'vue';
 import { InfoCircleOutlined,CaretUpOutlined,CaretDownOutlined,EllipsisOutlined  } from '@ant-design/icons-vue';
 import { getRangeDate } from '@/utils/util'
+import NtestercTable from '@/components/ntesterc/NtestercTable.vue'
 
 const loading = ref(true);
 
@@ -518,6 +526,18 @@ for (let i = 0; i < 50; i += 1) {
     range: Math.floor(Math.random() * 100),
     status: Math.floor((Math.random() * 10) % 2)
   })
+}
+
+const searchTablePagination = reactive({
+  current: 1,
+  pageSize: 5,
+  total: searchData.length,
+  showSizeChanger: false,
+})
+
+function onSearchTablePageChange(pag: { current?: number; pageSize?: number }) {
+  if (pag.current != null) searchTablePagination.current = pag.current
+  if (pag.pageSize != null) searchTablePagination.pageSize = pag.pageSize
 }
 
 const salesType = ref('all');

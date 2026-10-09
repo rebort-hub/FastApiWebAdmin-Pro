@@ -1,0 +1,4 @@
+name = "fastadmin_project"
+title = "项目管理"
+version = "1.0.0"
+description = "业务项目管理插件示例（fastadmin_project → /api/project/...）"

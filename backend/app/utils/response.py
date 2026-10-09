@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from typing import Any, Tuple, List, Optional
@@ -75,7 +75,7 @@ class PaginationResponse(Response):
 
     @staticmethod
     def get_paginated_response(data, page, page_size) -> Tuple[int, List[Any]]:
-        # 计算起始索引和结束索引
+
         start = (page - 1) * page_size
         end = page * page_size
 

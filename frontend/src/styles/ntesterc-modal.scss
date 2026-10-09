@@ -1,0 +1,49 @@
+/* 系统管理：新建/编辑类弹窗，避免 800px + 横向表单两侧大片留白 */
+.ntesterc-form-modal {
+  .ant-modal-header {
+    padding: 16px 20px;
+    margin-bottom: 0;
+  }
+
+  .ant-modal-body {
+    padding: 16px 20px 8px;
+  }
+
+  .ant-modal-footer {
+    padding: 12px 20px 16px;
+  }
+
+  .ant-form-item {
+    margin-bottom: 16px;
+  }
+
+  .ant-input-number {
+    width: 100%;
+  }
+}
+
+/* 新建/编辑/查看：右侧抽屉 */
+.ntesterc-form-drawer {
+  .ant-drawer-header {
+    padding: 16px 20px;
+  }
+
+  .ant-drawer-body {
+    padding: 16px 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .ant-drawer-footer {
+    padding: 12px 20px 16px;
+    text-align: right;
+  }
+
+  .ant-form-item {
+    margin-bottom: 16px;
+  }
+
+  .ant-input-number {
+    width: 100%;
+  }
+}

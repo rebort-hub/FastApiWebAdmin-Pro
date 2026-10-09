@@ -36,7 +36,7 @@
     </div>
 
     <div class="table-wrapper">
-      <a-card title="用户列表" :bordered="false" :headStyle="{ borderBottom: 'none', padding: '20px 24px' }" :bodyStyle="{ padding: '0 24px', minHeight: 'calc(100vh - 400px)' }">
+      <NtestercTableCard title="用户列表">
         <template #extra>
           <a-button type="primary" :icon="h(PlusOutlined)" @click="modalHandle('create')"  style="margin-right: 10px;">新建</a-button>
           <a-dropdown>
@@ -50,8 +50,8 @@
             </a-button>
           </a-dropdown>
         </template>
-        <a-table :rowKey="record => record.id" :columns="columns" :data-source="dataSource" :row-selection="rowSelection" :loading="tableLoading"
-          @change="handleTableChange" :scroll="{ x: 500, y: 'calc(100vh - 500px)' }" :pagination="pagination" :style="{ minHeight: '500px' }">
+        <NtestercTable :rowKey="record => record.id" :columns="columns" :data-source="dataSource" :row-selection="rowSelection" :loading="tableLoading"
+          @change="handleTableChange" :scroll="{ x: 500, y: 'calc(100vh - 560px)' }" :pagination="pagination">
           <template v-slot:bodyCell="{ column, record, index }">
             <template v-if="column.dataIndex === 'index'">
               <span>{{ index + 1 }}</span>
@@ -75,7 +75,7 @@
               </span>
             </template>
             <template v-if="column.dataIndex === 'operation'">
-              <div style="display: flex; gap: 15px;">
+              <div class="ntesterc-table__actions">
               <a v-on:click="modalHandle('view', index)">查看</a>
               <a v-on:click="modalHandle('update', index)">修改</a>
               <a-popconfirm title="确定删除吗？" ok-text="确定" cancel-text="取消" @confirm="deleteRow(record)">
@@ -84,13 +84,24 @@
             </div>
             </template>
           </template>
-        </a-table>
-      </a-card>
+        </NtestercTable>
+      </NtestercTableCard>
     </div>
 
-    <a-modal v-model:open="openModal" @ok="handleModalSumbit" :width="800" :destroyOnClose="true" :confirmLoading="modalSubmitLoading" style="top: 30px">
-      <template #title>
-          <span>{{ modalTitle === 'create'? '新建用户' : (modalTitle === 'view' ? '查看用户' : '修改用户' ) }}</span>
+    <a-drawer
+      v-model:open="openModal"
+      class="ntesterc-form-drawer"
+      placement="right"
+      :width="modalTitle === 'view' ? 640 : 520"
+      :destroy-on-close="true"
+      :title="modalTitle === 'create' ? '新建用户' : modalTitle === 'view' ? '查看用户' : '修改用户'"
+    >
+      <template #footer>
+        <a-button v-if="modalTitle === 'view'" @click="openModal = false">关闭</a-button>
+        <a-space v-else>
+          <a-button @click="openModal = false">取消</a-button>
+          <a-button type="primary" :loading="modalSubmitLoading" @click="handleModalSumbit">确定</a-button>
+        </a-space>
       </template>
       <div v-if="modalTitle === 'view'">
         <a-spin :spinning="detailStateLoading">
@@ -117,7 +128,7 @@
         </a-spin>
       </div>
       <div v-else-if="modalTitle === 'create'">
-        <a-form ref="createForm" :model="createState" v-bind="{ labelCol: { span: 5 }, wrapperCol: { span: 15 } }">
+        <a-form ref="createForm" layout="vertical" :model="createState">
           <a-form-item name="username" label="用户名" :rules="[{ required: true, message: '请输入用户名' }]">
             <a-input v-model:value="createState.username" placeholder="请输入用户名" allowClear></a-input>
           </a-form-item>
@@ -174,7 +185,7 @@
         </a-form>
       </div>
       <div v-else>
-        <a-form ref="updateForm" :model="updateState" v-bind="{ labelCol: { span: 5 }, wrapperCol: { span: 15 } }">
+        <a-form ref="updateForm" layout="vertical" :model="updateState">
           <a-form-item name="username" label="用户名" :rules="[{ required: true, message: '请输入用户名' }]">
             <a-input v-model:value="updateState.username" placeholder="请输入用户名" allowClear></a-input>
           </a-form-item>
@@ -239,7 +250,7 @@
           </a-form-item>
         </a-form>
       </div>
-    </a-modal>
+    </a-drawer>
 
     <SelectorModal ref="selectorModal" @event="handleSelectorModalEvent" />
   </div>
@@ -248,6 +259,8 @@
 <script lang="ts" setup>
 import { ref, reactive, computed, unref, onMounted, h } from 'vue';
 import PageHeader from '@/components/PageHeader.vue';
+import NtestercTable from '@/components/ntesterc/NtestercTable.vue';
+import NtestercTableCard from '@/components/ntesterc/NtestercTableCard.vue';
 import { Table, message, Modal } from 'ant-design-vue';
 import { getUserList, createUser, updateUser, deleteUser, batchEnableUser, batchDisableUser } from '@/api/user'
 import { getDeptOptions } from '@/api/dept'

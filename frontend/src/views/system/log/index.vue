@@ -36,10 +36,9 @@
     </div>
 
     <div class="table-wrapper">
-      <a-card title="日志列表" :bordered="false" :headStyle="{ borderBottom: 'none', padding: '20px 24px' }"
-        :bodyStyle="{ padding: '0 24px', minHeight: 'calc(100vh - 400px)' }">
-        <a-table :rowKey="record => record.id" :columns="columns" :data-source="dataSource" :loading="tableLoading"
-          @change="handleTableChange" :scroll="{ x: 500, y: 'calc(100vh - 500px)' }" :pagination="pagination" :style="{ minHeight: '500px' }">
+      <NtestercTableCard title="日志列表">
+        <NtestercTable :rowKey="record => record.id" :columns="columns" :data-source="dataSource" :loading="tableLoading"
+          @change="handleTableChange" :scroll="{ x: 500, y: 'calc(100vh - 560px)' }" :pagination="pagination">
           <template v-slot:bodyCell="{ column, record, index }">
             <template v-if="column.dataIndex === 'index'">
               <span>{{ index + 1 }}</span>
@@ -51,11 +50,18 @@
               <a v-on:click="modalHandle(index)">查看</a>
             </template>
           </template>
-        </a-table>
-      </a-card>
+        </NtestercTable>
+      </NtestercTableCard>
     </div>
 
-    <a-modal v-model:open="openModal" @ok="openModal = false" :width="800" :destroyOnClose="true" style="top: 30px">
+    <a-modal
+      v-model:open="openModal"
+      wrap-class-name="ntesterc-form-modal"
+      :width="720"
+      :destroy-on-close="true"
+      style="top: 30px"
+      @ok="openModal = false"
+    >
       <template #title>
         <span>查看日志</span>
       </template>
@@ -86,6 +92,8 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted } from 'vue';
 import PageHeader from '@/components/PageHeader.vue';
+import NtestercTable from '@/components/ntesterc/NtestercTable.vue';
+import NtestercTableCard from '@/components/ntesterc/NtestercTableCard.vue';
 import type { TableColumnsType } from 'ant-design-vue';
 import { getLogList } from '@/api/log'
 import { SearchOutlined } from '@ant-design/icons-vue';

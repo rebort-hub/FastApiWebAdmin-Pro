@@ -1,14 +1,15 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from typing import Any, List, Dict, Sequence, Optional
-import importlib, uuid, random
+from typing import Any, List, Dict, Sequence, Optional, Union
+import importlib, uuid, random, os
 from pathlib import Path
-from app.crud.base import ModelType
+from app.shared.crud.base import ModelType
 from app.models.base import Model
 from sqlalchemy.sql.elements import ColumnElement
 from fastapi import UploadFile
-from app.core.config import settings
+from app.config.setting import settings
+from app.config.path_conf import APP_DIR
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 
@@ -69,56 +70,76 @@ def get_random_character() -> str:
     return uuid.uuid4().hex
 
 
-# 生成带有噪声和干扰的验证码图片
+def _load_captcha_font(size: int = 42) -> Union[ImageFont.FreeTypeFont, ImageFont.ImageFont]:
+    """按绝对路径加载验证码字体，缺失时回退到系统字体。"""
+    windir = Path(os.environ.get("WINDIR", r"C:\Windows"))
+    candidates = [
+        APP_DIR / "resources" / "gantians.otf",
+        APP_DIR / "resources" / "captcha.ttf",
+        windir / "Fonts" / "arial.ttf",
+        windir / "Fonts" / "segoeui.ttf",
+        windir / "Fonts" / "consola.ttf",
+        Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
+        Path("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"),
+    ]
+    for font_path in candidates:
+        if not font_path.is_file():
+            continue
+        try:
+            return ImageFont.truetype(str(font_path), size)
+        except OSError:
+            continue
+    return ImageFont.load_default()
+
+
+
 def generate_captcha(code) -> BytesIO:
     """
     生成带有噪声和干扰的验证码图片
     :return: 验证码图片流
     """
-    # 创建一张随机颜色背景的图片
+
     background_color = (random.randint(200, 255), random.randint(200, 255), random.randint(200, 255))
     width, height = 160, 60
     image = Image.new('RGB', (width, height), color=background_color)
 
-    # 获取一个绘图对象
-    draw = ImageDraw.Draw(image)
 
-    # 字体设置（如果需要自定义字体，请替换下面的字体路径）
-    font = ImageFont.truetype("./app/resources/gantians.otf", 42)
+    draw = ImageDraw.Draw(image)
+    font = _load_captcha_font(42)
 
     # 计算验证码文本的总宽度
     total_text_width = 0
     for char in code:
-        # 计算文本的宽度
+
         bbox = ImageDraw.Draw(Image.new('RGB', (1, 1))).textbbox((0, 0), char, font=font)
         text_width = bbox[2] - bbox[0]
         total_text_width += text_width
 
-    # 计算每个字符的起始位置
+
     x_offset = (width - total_text_width) / 2
-    # 计算文本的高度
+
     bbox = ImageDraw.Draw(Image.new('RGB', (1, 1))).textbbox((0, 0), code[0], font=font)
     text_height = bbox[3] - bbox[1]
     y_offset = (height - text_height) / 2 - draw.textbbox((0, 0), code[0], font=font)[1]
 
-    # 绘制每个字符（单独的颜色和扭曲）
+
     for char in code:
-        # 随机选择字体颜色
+
         text_color = (random.randint(0, 100), random.randint(0, 100), random.randint(0, 100))
 
-        # 计算字符位置并稍微扭曲
+
         bbox = ImageDraw.Draw(Image.new('RGB', (1, 1))).textbbox((0, 0), char, font=font)
         char_width = bbox[2] - bbox[0]
         char_x = x_offset + random.uniform(-3, 3)
         char_y = y_offset + random.uniform(-5, 5)
 
-        # 绘制字符
+
         draw.text((char_x, char_y), char, font=font, fill=text_color)
 
-        # 更新下一个字符的位置
+
         x_offset += char_width + random.uniform(2, 8)
 
-    # 添加少量的圆圈干扰
+
     for _ in range(random.randint(2, 4)):
         # 随机位置和大小
         x = random.randint(0, width)
@@ -126,7 +147,7 @@ def generate_captcha(code) -> BytesIO:
         radius = random.randint(5, 10)
         draw.ellipse((x - radius, y - radius, x + radius, y + radius), outline=text_color)
 
-    # 添加少量的噪点
+
     for _ in range(random.randint(10, 20)):
         x = random.randint(0, width - 1)
         y = random.randint(0, height - 1)
@@ -134,7 +155,7 @@ def generate_captcha(code) -> BytesIO:
         noise_color = (random.randint(0, 50), random.randint(0, 50), random.randint(0, 50))
         draw.rectangle([x, y, x + noise_size, y + noise_size], fill=noise_color)
 
-    # 返回验证码图片流
+
     stream = BytesIO()
     image.save(stream, format='PNG')
 
@@ -213,25 +234,24 @@ def get_child_recursion(
 
 
 async def upload_image(file: UploadFile, dirname: str) -> Optional[str]:
-    """
-    图片上传
-    :param file: 文件对象
-    :param dirname: 文件目录
-    :return: 图片链接
-    """
-    if 'image' not in file.content_type:
-        return
+    """图片上传，走统一存储，返回访问 URL。"""
+    from pathlib import Path
 
-    image_type = file.content_type.split('/')[1]
-    image_name = f'{uuid.uuid4().hex}.{image_type}'
+    from app.utils.storage import StorageFactory
 
-    image_path = Path(f'{settings.STATIC_ROOT}/{dirname}')
-    if not image_path.exists():
-        image_path.mkdir(parents=True, exist_ok=True)
+    ext = Path(file.filename or "").suffix.lower()
+    image_exts = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg", ".ico"}
+    content_type = (file.content_type or "").lower()
+    is_image = "image" in content_type or ext in image_exts
+    if not is_image:
+        return None
 
-    image_path = f'{settings.STATIC_ROOT}/{dirname}/{image_name}'
-    with open(image_path, 'wb') as f:
-        f.write(await file.read())
+    content = await file.read()
+    max_bytes = settings.UPLOAD_MAX_SIZE_MB * 1024 * 1024
+    if len(content) > max_bytes:
+        return None
+    await file.seek(0)
 
-    image_url = f'{settings.STATIC_DIR}/{dirname}/{image_name}'
-    return image_url
+    storage = StorageFactory.create()
+    result = await storage.upload(file, dirname)
+    return result.get("url")

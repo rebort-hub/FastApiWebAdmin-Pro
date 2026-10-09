@@ -6,7 +6,7 @@
     <a href="https://github.com/rebort-hub/FastApiWebAdmin-Pro.git"><img src="https://github.com/rebort-hub/FastApiWebAdmin-Pro/badge/star.svg?theme=dark"></a>
     <a href="https://github.com/rebort-hub/FastApiWebAdmin-Pro.git"><img src="https://github.com/rebort-hub/FastApiWebAdmin-Pro.git?style=social"></a>
     <a href="https://github.com/rebort-hub/FastApiWebAdmin-Pro/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-MIT-orange"></a>
-    <img src="https://img.shields.io/badge/Python-≥3.10-blue">
+    <img src="https://img.shields.io/badge/Python-3.10~3.12-blue">
     <img src="https://img.shields.io/badge/NodeJS-≥20.0-blue">
   </p>
 </div>
@@ -27,13 +27,13 @@
 
 管理员账户：
 
-- 账号：senqi
-- 密码：senqi1010
+- 账号：admin
+- 密码：123456
 
 测试账户：
 
 - 账号：test
-- 密码：test1010
+- 密码：123456
 
 ## 安装和使用
 
@@ -44,23 +44,51 @@
 ### 准备工作
 
 ```
-Python == 3.10（其他版本均未测试）
+Python 3.10 ~ 3.12（推荐 3.12 本地开发）
 nodejs >= 20.0（推荐使用最新版）
 PgSQL == 14（其他版本均未测试）
 Redis（推荐使用最新版）
+uv（可选，本地开发推荐，见后端安装依赖）
 ```
 
 ### 后端
 
 1. 安装依赖
-   
+
+
+   **方式一：uv（推荐本地开发）**
+
+   需先 [安装 uv](https://docs.astral.sh/uv/getting-started/installation/)，在 `backend` 目录执行 **一条命令** 创建虚拟环境并装齐全部依赖（含 pydantic-core、starlette 等传递包）：
+
    ```shell
    cd backend
-   pip3 install -r requirements.txt
+   # 创建虚拟环境并激活
+   python -m venv .venv
+   # 安装依赖
+   uv sync
    ```
 
-2. 修改项目数据库配置信息
-   在`app/core/config.py`文件中的`SQL_DB_URL`和`REDIS_URL`
+   Windows 也可双击或运行 `backend/run_win.bat`，选择「安装/同步依赖」。Linux/macOS：`./run_linux.sh sync`。
+
+   日常命令使用 `uv run`（见下方初始化与启动）。新增/升级依赖时：改 `pyproject.toml` → `uv lock` → `uv sync`，并可选 `uv export --no-dev --no-hashes -o requirements.txt` 同步 pip 清单。
+
+   **方式二：pip**
+
+   ```shell
+   cd backend
+   pip install -r requirements.txt
+   ```
+
+2. 配置环境
+
+   ```shell
+   cd backend
+   copy env\.env.example env\.env   # Linux/macOS: cp env/.env.example env/.env
+   ```
+
+   编辑 `backend/env/.env`（**仅此一份**；用 `ENVIRONMENT=dev|prod|test` 区分环境）。数据库、Redis、密钥、`STATIC_URL`（离线文档静态资源）等均在此配置。
+
+   后端分层与插件规范见 [backend/docs/ARCHITECTURE.md](backend/docs/ARCHITECTURE.md)。
 
 3. 创建名为`fastapiwebadmin-pro`的数据库
 
@@ -70,14 +98,26 @@ Redis（推荐使用最新版）
    # 进入后端根目录 backend 下运行
    # 运行命令后会自动生成数据库内的表和数据
    # 如已初始化数据库数据，此命令可不执行
-   python3 main.py init
+   # uv run python main.py run 或者 python main.py run 
    ```
 
-5. 启动
+5. 数据库迁移（模型变更后，在 `backend` 目录）
+
+   ```shell
+   uv run python main.py revision -m "说明变更"
+   uv run python main.py upgrade
+   uv run python main.py current
+   ```
+
+   详见 [backend/docs/ARCHITECTURE.md](backend/docs/ARCHITECTURE.md) 中 Alembic 说明。
+
+6. 启动
    
    ```shell
    # 进入后端根目录 backend 下运行
    python3 main.py run
+   # 若使用 uv 安装依赖：
+   # uv run python main.py run
    ```
 
 ### 前端
@@ -85,25 +125,27 @@ Redis（推荐使用最新版）
 1. 安装依赖
    
    ```shell
-   cd web
-   npm install
+   cd frontend
+   pnpm install
    ```
 
 2. 运行
    
    ```shell
-   npm run dev
+   pnpm run dev
    ```
 
 3. 打包
    
    ```shell
-   npm run build
+   pnpm exec vite build   # 仅打包
+   pnpm run build    # 会先跑 vue-tsc
+   pnpm run typecheck
    ```
 
 ### 访问项目
 
 - 前端地址：http://127.0.0.1:5180
-- 账号：`senqi`密码：`senqi1010`
-- 接口地址：http://127.0.0.1:8080/docs
+- 账号：`admin`密码：`123456`
+- 接口地址：http://127.0.0.1:8085/docs
 

@@ -1,10 +1,7 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from fastapi import APIRouter
-from .system import SystemRouter
 
+from fastapi import APIRouter
 
 ApiRouter = APIRouter()
-
-ApiRouter.include_router(SystemRouter, prefix="/system")

@@ -34,7 +34,7 @@
     </div>
 
     <div>
-      <a-table :rowKey="record => record.id" :columns="columns" :data-source="dataSource" :row-selection="rowSelection" :loading="tableLoading"
+      <NtestercTable :rowKey="record => record.id" :columns="columns" :data-source="dataSource" :row-selection="rowSelection" :loading="tableLoading"
         @change="handleTableChange" :scroll="{ x: 500, y: 330 }" :pagination="pagination" :style="{ minHeight: '330px' }">
         <template v-slot:bodyCell="{ column, record, index }">
           <template v-if="column.dataIndex === 'index'">
@@ -45,7 +45,7 @@
             </span>
           </template>
         </template>
-      </a-table>
+      </NtestercTable>
     </div>
   </a-modal>
 </template>
@@ -53,6 +53,7 @@
 <script lang="ts" setup>
 import { ref, reactive, computed, unref } from 'vue';
 import { Table } from 'ant-design-vue';
+import NtestercTable from '@/components/ntesterc/NtestercTable.vue';
 import { getPositionOptions } from '@/api/position'
 import { getRoleOptions } from '@/api/role'
 import type { TableColumnsType } from 'ant-design-vue';

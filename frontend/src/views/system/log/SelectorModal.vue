@@ -35,10 +35,9 @@
     </div>
 
     <div class="table-wrapper">
-      <a-card title="用户列表" :bordered="true" :headStyle="{ borderBottom: 'none', padding: '20px 24px' }"
-      :bodyStyle="{ padding: '0 24px' }">
-        <a-table :rowKey="record => record.id" :columns="columns" :data-source="dataSource" :loading="tableLoading"
-          :row-selection="rowSelection" @change="handleTableChange" :scroll="{ x: 500, y: 'calc(100vh - 500px)' }" :pagination="pagination">
+      <NtestercTableCard title="用户列表">
+        <NtestercTable :rowKey="record => record.id" :columns="columns" :data-source="dataSource" :loading="tableLoading"
+          :row-selection="rowSelection" @change="handleTableChange" :scroll="{ x: 500, y: 'calc(100vh - 560px)' }" :pagination="pagination">
           <template v-slot:bodyCell="{ column, record, index }">
             <template v-if="column.dataIndex === 'index'">
               <span>{{ index + 1 }}</span>
@@ -48,8 +47,8 @@
               </span>
             </template>
           </template>
-        </a-table>
-      </a-card>
+        </NtestercTable>
+      </NtestercTableCard>
     </div>
   </a-modal>
 </template>
@@ -57,6 +56,8 @@
 <script lang="ts" setup>
 import { ref, reactive, computed, unref } from 'vue';
 import type { TableColumnsType } from 'ant-design-vue';
+import NtestercTable from '@/components/ntesterc/NtestercTable.vue';
+import NtestercTableCard from '@/components/ntesterc/NtestercTableCard.vue';
 import { getUserList } from '@/api/user'
 import type { searchCreatorDataType, creatorTableDataType } from './types'
 

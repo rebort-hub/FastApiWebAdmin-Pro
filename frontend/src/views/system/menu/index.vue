@@ -2,8 +2,7 @@
   <div>
     <page-header />
     <div class="table-wrapper">
-      <a-card title="菜单列表" :bordered="false" :headStyle="{ borderBottom: 'none', padding: '20px 24px' }"
-        :bodyStyle="{ padding: '0 24px', minHeight: 'calc(100vh - 400px)' }">
+      <NtestercTableCard title="菜单列表">
         <template #extra>
           <a-button type="primary" :icon="h(PlusOutlined)" @click="modalHandle('create')"  style="margin-right: 10px;">新建</a-button>
           <a-dropdown>
@@ -17,7 +16,7 @@
             </a-button>
           </a-dropdown>
         </template>
-        <a-table :rowKey="record => record.id" :columns="columns" :data-source="menuTreeData" :row-selection="rowSelection":loading="tableLoading" 
+        <NtestercTable :rowKey="record => record.id" :columns="columns" :data-source="menuTreeData" :row-selection="rowSelection" :loading="tableLoading" 
           :scroll="{ x: 500, y: 'calc(100vh - 350px)' }" :pagination="false" :style="{ minHeight: '700px' }">
           <template v-slot:bodyCell="{ column, record, index }">
             <template v-if="column.dataIndex === 'type'">
@@ -39,14 +38,25 @@
               </div>
             </template>
           </template>
-        </a-table>
-      </a-card>
+        </NtestercTable>
+      </NtestercTableCard>
     </div>
 
     <div>
-      <a-modal v-model:open="openModal" @ok="handleModalSumbit" :width="800" :destroyOnClose="true" :confirmLoading="modalSubmitLoading" style="top: 30px"> 
-        <template #title>
-            <span>{{ modalTitle === 'create'? '新建菜单' : (modalTitle === 'view' ? '查看菜单' : '修改菜单' ) }}</span>
+      <a-drawer
+        v-model:open="openModal"
+        class="ntesterc-form-drawer"
+        placement="right"
+        :width="modalTitle === 'view' ? 720 : 560"
+        :destroy-on-close="true"
+        :title="modalTitle === 'create' ? '新建菜单' : modalTitle === 'view' ? '查看菜单' : '修改菜单'"
+      >
+        <template #footer>
+          <a-button v-if="modalTitle === 'view'" @click="openModal = false">关闭</a-button>
+          <a-space v-else>
+            <a-button @click="openModal = false">取消</a-button>
+            <a-button type="primary" :loading="modalSubmitLoading" @click="handleModalSumbit">确定</a-button>
+          </a-space>
         </template>
         <div v-if="modalTitle === 'view'">
           <a-spin :spinning="detailStateLoading">
@@ -79,7 +89,7 @@
           </a-spin>
         </div>
         <div v-else-if="modalTitle === 'create'">
-          <a-form ref="createForm" :model="createState" v-bind="{ labelCol: { span: 5 }, wrapperCol: { span: 15 } }">
+          <a-form ref="createForm" layout="vertical" :model="createState">
             <a-form-item name="name" label="名称" :rules="[{ required: true, message: '请输入名称' }]">
               <a-input v-model:value="createState.name" placeholder="请输入名称" allowClear></a-input>
             </a-form-item>
@@ -134,14 +144,14 @@
                     </a-tab-pane>
                   </a-tabs>
                   <div class="icon-pagination-wrapper">
-                    <a-pagination
-                      size="small"
-                      v-model:current="pagination.current"
-                      v-model:pageSize="pagination.pageSize"
+                    <NtestercPagination
+                      :current="pagination.current"
+                      :page-size="pagination.pageSize"
                       :total="pagination.total"
-                      :showTotal="pagination.showTotal"
-                      :showQuickJumper="pagination.showQuickJumper"
-                      :showSizeChanger="false"
+                      :show-total="pagination.showTotal"
+                      :show-quick-jumper="pagination.showQuickJumper"
+                      :show-size-changer="false"
+                      @change="onIconPaginationChange"
                     />
                   </div>
                 </template>
@@ -178,7 +188,7 @@
           </a-form>
         </div>
         <div v-else>
-          <a-form ref="updateForm" :model="updateState" v-bind="{ labelCol: { span: 5 }, wrapperCol: { span: 15 } }">
+          <a-form ref="updateForm" layout="vertical" :model="updateState">
             <a-form-item name="name" label="名称" :rules="[{ required: true, message: '请输入名称' }]">
               <a-input v-model:value="updateState.name" placeholder="请输入名称" allowClear></a-input>
             </a-form-item>
@@ -226,14 +236,14 @@
                     </a-tab-pane>
                   </a-tabs>
                   <div class="icon-pagination-wrapper">
-                    <a-pagination
-                      size="small"
-                      v-model:current="pagination.current"
-                      v-model:pageSize="pagination.pageSize"
+                    <NtestercPagination
+                      :current="pagination.current"
+                      :page-size="pagination.pageSize"
                       :total="pagination.total"
-                      :showTotal="pagination.showTotal"
-                      :showQuickJumper="pagination.showQuickJumper"
-                      :showSizeChanger="false"
+                      :show-total="pagination.showTotal"
+                      :show-quick-jumper="pagination.showQuickJumper"
+                      :show-size-changer="false"
+                      @change="onIconPaginationChange"
                     />
                   </div>
                 </template>
@@ -275,7 +285,7 @@
             </div>
           </a-form>
         </div>
-      </a-modal>
+      </a-drawer>
     </div>
   </div>
 </template>
@@ -283,6 +293,9 @@
 <script lang="ts" setup>
 import { ref, reactive, computed, unref, h, onMounted, watch } from 'vue';
 import PageHeader from '@/components/PageHeader.vue';
+import NtestercTable from '@/components/ntesterc/NtestercTable.vue';
+import NtestercTableCard from '@/components/ntesterc/NtestercTableCard.vue';
+import NtestercPagination from '@/components/ntesterc/NtestercPagination.vue';
 import { message, Modal } from 'ant-design-vue';
 import { getMenuList, createMenu, updateMenu, deleteMenu, batchEnableMenu, batchDisableMenu } from '@/api/menu'
 import { listToTree, cloneDeep, isEmpty } from '@/utils/util';
@@ -386,8 +399,13 @@ const pagination = reactive({
   showQuickJumper: true,
   showSizeChanger: false,
   total: 0,
-  showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条 / 总共 ${total} 条`
+  showTotal: (total: number, range: [number, number]) => `第 ${range[0]}-${range[1]} 条 / 总共 ${total} 条`
 })
+
+function onIconPaginationChange(page: number, pageSize: number) {
+  pagination.current = page
+  pagination.pageSize = pageSize
+}
 
 const loadingData = () => {
   tableLoading.value = true;

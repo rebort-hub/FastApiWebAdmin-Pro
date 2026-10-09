@@ -31,8 +31,7 @@
     </div>
 
     <div class="table-wrapper">
-      <a-card title="岗位列表" :bordered="false" :headStyle="{ borderBottom: 'none', padding: '20px 24px' }"
-        :bodyStyle="{ padding: '0 24px', minHeight: 'calc(100vh - 400px)' }">
+      <NtestercTableCard title="岗位列表">
         <template #extra>
           <a-button type="primary" :icon="h(PlusOutlined)" @click="modalHandle('create')"  style="margin-right: 10px;">新建</a-button>
           <a-dropdown>
@@ -46,8 +45,8 @@
             </a-button>
           </a-dropdown>
         </template>
-        <a-table :rowKey="record => record.id" :columns="columns" :data-source="dataSource" :row-selection="rowSelection" :loading="tableLoading"
-          @change="handleTableChange" :scroll="{ x: 500, y: 'calc(100vh - 500px)' }" :pagination="pagination" :style="{ minHeight: '500px' }">
+        <NtestercTable :rowKey="record => record.id" :columns="columns" :data-source="dataSource" :row-selection="rowSelection" :loading="tableLoading"
+          @change="handleTableChange" :scroll="{ x: 500, y: 'calc(100vh - 560px)' }" :pagination="pagination">
           <template v-slot:bodyCell="{ column, record, index }">
             <template v-if="column.dataIndex === 'index'">
               <span>{{ index + 1 }}</span>
@@ -58,7 +57,7 @@
               </span>
             </template>
             <template v-if="column.dataIndex === 'operation'">
-              <div style="display: flex; gap: 15px;">
+              <div class="ntesterc-table__actions">
                 <a v-on:click="modalHandle('view', index)">查看</a>
                 <a v-on:click="modalHandle('update', index)">修改</a>
                 <a-popconfirm title="确定删除吗？" ok-text="确定" cancel-text="取消" @confirm="deleteRow(record)">
@@ -67,12 +66,20 @@
               </div>
             </template>
           </template>
-        </a-table>
-      </a-card>
+        </NtestercTable>
+      </NtestercTableCard>
     </div>
 
     <div>
-      <a-modal v-model:open="openModal" @ok="handleModalSumbit" :width="800" :destroyOnClose="true" :confirmLoading="modalSubmitLoading" style="top: 30px">
+      <a-modal
+        v-model:open="openModal"
+        wrap-class-name="ntesterc-form-modal"
+        :width="modalTitle === 'view' ? 720 : 520"
+        :destroy-on-close="true"
+        :confirm-loading="modalSubmitLoading"
+        style="top: 30px"
+        @ok="handleModalSumbit"
+      >
         <template #title>
             <span>{{ modalTitle === 'create'? '新建岗位' : (modalTitle === 'view' ? '查看岗位' : '修改岗位' ) }}</span>
         </template>
@@ -92,7 +99,7 @@
           </a-spin>
         </div>
         <div v-else-if="modalTitle === 'create'">
-          <a-form ref="createForm" :model="createState" v-bind="{ labelCol: { span: 5 }, wrapperCol: { span: 15 } }">
+          <a-form ref="createForm" layout="vertical" :model="createState">
             <a-form-item name="name" label="名称" :rules="[{ required: true, message: '请输入名称' }]">
               <a-input v-model:value="createState.name" placeholder="请输入名称" allowClear></a-input>
             </a-form-item>
@@ -105,7 +112,7 @@
           </a-form>
         </div>
         <div v-else>
-          <a-form ref="updateForm" :model="updateState" v-bind="{ labelCol: { span: 5 }, wrapperCol: { span: 15 } }">
+          <a-form ref="updateForm" layout="vertical" :model="updateState">
             <a-form-item name="name" label="名称" :rules="[{ required: true, message: '请输入名称' }]">
               <a-input v-model:value="updateState.name" placeholder="请输入名称" allowClear></a-input>
             </a-form-item>
@@ -131,6 +138,8 @@
 <script lang="ts" setup>
 import { ref, reactive, computed, unref, onMounted, h } from 'vue';
 import PageHeader from '@/components/PageHeader.vue';
+import NtestercTable from '@/components/ntesterc/NtestercTable.vue';
+import NtestercTableCard from '@/components/ntesterc/NtestercTableCard.vue';
 import { Table, message, Modal } from 'ant-design-vue';
 import { getPositionList, createPosition, updatePosition, deletePosition, batchEnablePosition, batchDisablePosition } from '@/api/position'
 import { cloneDeep, isEmpty } from '@/utils/util';

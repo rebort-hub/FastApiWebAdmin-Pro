@@ -101,8 +101,17 @@
       </a-col>
     </a-row>
 
-    <a-modal title="新建部门" v-model:open="openModal" @ok="handleModalSumbit" :width="800" :destroyOnClose="true" :confirmLoading="modalSubmitLoading" style="top: 30px">
-      <a-form ref="createForm" :model="createState" v-bind="{ labelCol: { span: 5 }, wrapperCol: { span: 15 } }">
+    <a-modal
+      title="新建部门"
+      v-model:open="openModal"
+      wrap-class-name="ntesterc-form-modal"
+      :width="520"
+      :destroy-on-close="true"
+      :confirm-loading="modalSubmitLoading"
+      style="top: 30px"
+      @ok="handleModalSumbit"
+    >
+      <a-form ref="createForm" layout="vertical" :model="createState">
         <a-form-item name="name" label="名称" :rules="[{ required: true, message: '请输入名称' }]">
           <a-input v-model:value="createState.name" placeholder="请输入名称" allowClear></a-input>
         </a-form-item>

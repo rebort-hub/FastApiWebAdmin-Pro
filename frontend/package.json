@@ -5,14 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vue-tsc --noEmit && vite build",
+    "typecheck": "vue-tsc --noEmit",
     "preview": "vite preview"
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
-    "@types/node": "^20.11.20",
     "ant-design-vue": "^4.1.1",
     "axios": "^1.6.7",
+    "dayjs": "^1.11.23",
     "echarts": "^5.5.0",
     "md5": "^2.3.0",
     "sass": "^1.70.0",
@@ -24,7 +25,10 @@
     "vuex": "^4.1.0"
   },
   "devDependencies": {
+    "@types/node": "^20.11.20",
     "@vitejs/plugin-vue": "^4.5.2",
-    "vite": "^5.0.8"
+    "typescript": "^5.4.5",
+    "vite": "^5.0.8",
+    "vue-tsc": "^2.0.29"
   }
 }

@@ -1,15 +1,15 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from typing import AsyncGenerator, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import session_connect
 from fastapi import Request, Depends, status
-from aioredis import Redis
+from redis.asyncio import Redis
 from app.core.security import OAuth2Schema, decode_jwt_token
 from app.core.exceptions import CustomException
-from app.services.system import UserService
-from app.schemas.system import Auth
+from app.api.v1.system.user.service import UserService
+from app.api.v1.system.auth.schema import Auth
 
 
 async def session_getter() -> AsyncGenerator[AsyncSession, None]:

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from typing import Optional
@@ -35,6 +35,19 @@ class PositionQueryParams:
     def __init__(
             self,
             name: Optional[str] = Query(None, description="岗位名称"),
+            available: Optional[bool] = Query(True, description="状态")
+    ) -> None:
+        self.name = ("like", name)
+        self.available = available
+
+
+class ProjectQueryParams:
+    """
+    项目管理查询参数
+    """
+    def __init__(
+            self,
+            name: Optional[str] = Query(None, description="项目名称"),
             available: Optional[bool] = Query(True, description="状态")
     ) -> None:
         self.name = ("like", name)

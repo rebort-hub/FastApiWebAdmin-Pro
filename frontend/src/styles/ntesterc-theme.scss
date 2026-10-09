@@ -1,0 +1,181 @@
+:root {
+  --ntesterc-primary: #1677ff;
+}
+
+:root,
+[data-ntesterc-theme='light'] {
+  --ntesterc-bg: #f5f7fb;
+  --ntesterc-sider-bg: #ffffff;
+  --ntesterc-header-bg: rgba(255, 255, 255, 0.85);
+  --ntesterc-card-bg: #ffffff;
+  --ntesterc-border: rgba(5, 5, 5, 0.06);
+  --ntesterc-text: rgba(0, 0, 0, 0.88);
+  --ntesterc-text-secondary: rgba(0, 0, 0, 0.45);
+  --ntesterc-logo-title: rgba(0, 0, 0, 0.88);
+  --ntesterc-menu-hover: rgba(0, 0, 0, 0.04);
+  --ntesterc-menu-active: rgba(22, 119, 255, 0.1);
+  --ntesterc-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02);
+  --ntesterc-table-header-bg: #fafafa;
+  --ntesterc-table-row-bg: #ffffff;
+  --ntesterc-table-stripe-bg: #fafafa;
+}
+
+[data-ntesterc-theme='dark'] {
+  /* 中性黑灰，避免 Ant Design dark 默认偏蓝绿 */
+  --ntesterc-bg: #000000;
+  --ntesterc-sider-bg: #141414;
+  --ntesterc-header-bg: #141414;
+  --ntesterc-card-bg: #141414;
+  --ntesterc-border: rgba(255, 255, 255, 0.08);
+  --ntesterc-text: rgba(255, 255, 255, 0.85);
+  --ntesterc-text-secondary: rgba(255, 255, 255, 0.45);
+  --ntesterc-logo-title: rgba(255, 255, 255, 0.92);
+  --ntesterc-menu-hover: rgba(255, 255, 255, 0.08);
+  --ntesterc-menu-active: rgba(255, 255, 255, 0.12);
+  --ntesterc-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  --ntesterc-table-header-bg: #1f1f1f;
+  --ntesterc-table-row-bg: #141414;
+  --ntesterc-table-stripe-bg: #1a1a1a;
+}
+
+[data-ntesterc-theme='dark'] .ntesterc-admin-layout,
+[data-ntesterc-theme='dark'] .ntesterc-app {
+  background: var(--ntesterc-bg);
+}
+
+[data-ntesterc-theme='dark'] .ant-card,
+[data-ntesterc-theme='dark'] .ant-table,
+[data-ntesterc-theme='dark'] .ant-table-container,
+[data-ntesterc-theme='dark'] .ant-table-content,
+[data-ntesterc-theme='dark'] .ant-table-wrapper {
+  background: var(--ntesterc-card-bg) !important;
+}
+
+[data-ntesterc-theme='dark'] .ant-table-thead > tr > th {
+  background: var(--ntesterc-table-header-bg) !important;
+}
+
+.ant-table-body,
+.ant-table-placeholder {
+  background: var(--ntesterc-card-bg) !important;
+}
+
+.ant-table-cell-fix-left,
+.ant-table-cell-fix-right {
+  z-index: 2;
+}
+
+.ant-table-thead .ant-table-cell-fix-left,
+.ant-table-thead .ant-table-cell-fix-right {
+  background: var(--ntesterc-table-header-bg) !important;
+}
+
+.ant-table-tbody .ant-table-cell-fix-left,
+.ant-table-tbody .ant-table-cell-fix-right {
+  background: var(--ntesterc-table-row-bg) !important;
+}
+
+.ntesterc-admin-layout {
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--ntesterc-bg);
+  color: var(--ntesterc-text);
+}
+
+/* 列表页表格区域与底部分页留白 */
+.table-wrapper {
+  margin-bottom: 12px;
+  padding-bottom: 4px;
+}
+
+.ntesterc-table__actions {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.ntesterc-table__actions a {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+[data-box-mode='border'] {
+  --ntesterc-shadow: none;
+
+  .ntesterc-table-card,
+  .ant-card {
+    box-shadow: none !important;
+    border: 1px solid var(--ntesterc-border) !important;
+  }
+}
+
+[data-box-mode='shadow'] {
+  --ntesterc-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+
+  .ntesterc-table-card,
+  .ant-card {
+    border-color: transparent !important;
+    box-shadow: var(--ntesterc-shadow) !important;
+  }
+}
+
+[data-ntesterc-theme='dark'][data-box-mode='shadow'] {
+  --ntesterc-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+[data-menu-style='card'] .ntesterc-sidebar__menu {
+  .ant-menu-item,
+  .ant-menu-submenu-title {
+    margin-block: 6px;
+    background: var(--ntesterc-card-bg);
+    border: 1px solid var(--ntesterc-border);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+  }
+}
+
+[data-menu-style='outline'] .ntesterc-sidebar__menu {
+  .ant-menu-item,
+  .ant-menu-submenu-title {
+    background: transparent;
+    border: 1px solid var(--ntesterc-border);
+  }
+
+  .ant-menu-item-selected {
+    border-color: var(--ntesterc-primary);
+  }
+}
+
+[data-menu-style='immersive'] .ntesterc-sidebar {
+  .ntesterc-sidebar__menu {
+    padding: 0;
+
+    .ant-menu-item,
+    .ant-menu-submenu-title {
+      margin-inline: 0;
+      width: 100%;
+      border-radius: 0;
+    }
+
+    .ant-menu-item-selected {
+      background: var(--ntesterc-primary) !important;
+      color: #fff !important;
+    }
+  }
+}
+
+[data-menu-style='glass'] .ntesterc-sidebar {
+  background: color-mix(in srgb, var(--ntesterc-sider-bg) 72%, transparent);
+  backdrop-filter: blur(16px);
+
+  .ntesterc-sidebar__menu {
+    .ant-menu-item,
+    .ant-menu-submenu-title {
+      background: color-mix(in srgb, var(--ntesterc-card-bg) 35%, transparent);
+    }
+  }
+}
