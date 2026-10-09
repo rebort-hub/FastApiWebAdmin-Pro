@@ -707,15 +707,16 @@ function onSave() {
 }
 
 .color-custom {
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
+  flex-direction: row;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 
   span {
-    font-size: 11px;
-    line-height: 16px;
+    font-size: 12px;
+    line-height: 1;
     color: var(--ntesterc-text-secondary);
+    white-space: nowrap;
   }
 }
 </style>

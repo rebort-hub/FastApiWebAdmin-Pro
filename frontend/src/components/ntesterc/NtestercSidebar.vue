@@ -25,7 +25,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import type { MenuProps } from 'ant-design-vue'
-import type { ItemType } from 'ant-design-vue/es/menu/interface'
+import type { ItemType } from 'ant-design-vue/es/menu/src/interface'
 import NtestercLogo from './NtestercLogo.vue'
 
 defineOptions({ name: 'NtestercSidebar' })

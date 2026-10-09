@@ -69,7 +69,7 @@
 <script lang="ts" setup>
 import { computed, h, onMounted, reactive, ref, watch, type Component } from 'vue'
 import type { MenuProps } from 'ant-design-vue'
-import type { ItemType } from 'ant-design-vue/es/menu/interface'
+import type { ItemType } from 'ant-design-vue/es/menu/src/interface'
 import { useRoute, useRouter } from 'vue-router'
 import storage from 'store'
 import * as icons from '@ant-design/icons-vue'

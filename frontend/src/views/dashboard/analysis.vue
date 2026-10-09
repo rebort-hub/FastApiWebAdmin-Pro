@@ -305,6 +305,8 @@ import { InfoCircleOutlined,CaretUpOutlined,CaretDownOutlined,EllipsisOutlined  
 import { getRangeDate } from '@/utils/util'
 import NtestercTable from '@/components/ntesterc/NtestercTable.vue'
 
+defineOptions({ name: 'Analysis' })
+
 const loading = ref(true);
 
 let y: number[] = [];

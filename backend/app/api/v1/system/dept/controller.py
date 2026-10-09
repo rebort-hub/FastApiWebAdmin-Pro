@@ -1,13 +1,16 @@
 ﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Optional
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import JSONResponse
 from app.core.router_class import OperationLogRoute
+from app.core.params import PaginationQueryParams
 from app.core.dependencies import AuthPermission
 from app.api.v1.system.dept.service import DeptService
+from app.api.v1.system.user.service import UserService
 from app.api.v1.system.auth.schema import Auth
-from app.utils.response import SuccessResponse
+from app.utils.response import SuccessResponse, PaginationResponse
 from app.api.v1.system.dept.schema import (    DeptCreate,
     DeptUpdate,
     DeptBatchSetAvailable
@@ -40,6 +43,25 @@ async def get_dept_options(
 ) -> JSONResponse:
     data = await DeptService.get_dept_options(auth)
     return SuccessResponse(data)
+
+
+@DeptRouter.get("/users", summary="查询部门所属用户", description="按部门查询所属用户列表")
+async def get_dept_users(
+        paging_query: PaginationQueryParams = Depends(),
+        dept_id: int = Query(..., description="部门ID"),
+        username: Optional[str] = Query(None, description="用户名"),
+        name: Optional[str] = Query(None, description="姓名"),
+        available: Optional[bool] = Query(None, description="状态"),
+        auth: Auth = Depends(AuthPermission(permissions=["system:dept:query"])),
+) -> JSONResponse:
+    search = {
+        "dept_id": dept_id,
+        "username": ("like", username),
+        "name": ("like", name),
+        "available": available,
+    }
+    data = await UserService.get_user_list(search, auth)
+    return PaginationResponse(data, page=paging_query.page, page_size=paging_query.page_size)
 
 
 @DeptRouter.post("/create", summary="创建部门", description="创建部门")

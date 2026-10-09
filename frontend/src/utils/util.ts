@@ -1,5 +1,5 @@
 import storage from 'store'
-import type { MenuRouteNode } from '@/types/menu'
+import type { TreeNodeLike } from '@/types/tree'
 
 export function timeFix(): string {
   const time = new Date()
@@ -75,11 +75,11 @@ export function save_token(access_token: string, refresh_token: string, expires_
   storage.set('Refresh-Token', refresh_token)
 }
 
-export function listToTree(list: MenuRouteNode[]): MenuRouteNode[] {
+export function listToTree<T extends TreeNodeLike>(list: T[]): T[] {
   const resultList = list.filter((item) => {
-    const children = list.filter((child) => item.id === child.parent_id)
+    const children = list.filter((child) => item.id === child.parent_id) as T[]
     if (children.length > 0) {
-      item.children = children
+      ;(item as TreeNodeLike).children = children
     }
     return item.parent_id === null || item.parent_id === undefined
   })

@@ -1,6 +1,6 @@
 import request from '@/utils/axios'
 
-export function login(body: URLSearchParams | Record<string, string>) {
+export function login(body: URLSearchParams | Record<string, string | boolean | number>) {
   return request({
     url: '/api/system/auth/login',
     method: 'post',

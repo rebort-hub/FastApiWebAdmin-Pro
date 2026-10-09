@@ -200,7 +200,7 @@ function removeFile (record: { id: string; original_name?: string }) {
     title: '确认删除',
     content: `确定删除「${record.original_name || record.id}」吗？`,
     onOk: async () => {
-      await deleteFile({ id: record.id })
+      await deleteFile({ id: Number(record.id) })
       message.success('已删除')
       await refreshAll()
     },
@@ -212,7 +212,7 @@ function batchDelete () {
     title: '批量删除',
     content: `确定删除选中的 ${selectedRowKeys.value.length} 个文件吗？`,
     onOk: async () => {
-      await deleteFileList({ ids: selectedRowKeys.value })
+      await deleteFileList({ ids: selectedRowKeys.value.map((id) => Number(id)) })
       selectedRowKeys.value = []
       message.success('删除完成')
       await refreshAll()

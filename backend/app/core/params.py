@@ -75,10 +75,12 @@ class UserQueryParams:
             self,
             username: Optional[str] = Query(None, description="用户名"),
             name: Optional[str] = Query(None, description="姓名"),
-            available: Optional[bool] = Query(True, description="状态")
+            dept_id: Optional[int] = Query(None, description="部门ID"),
+            available: Optional[bool] = Query(None, description="状态")
     ) -> None:
         self.username = ("like", username)
         self.name = ("like", name)
+        self.dept_id = dept_id
         self.available = available
 
 

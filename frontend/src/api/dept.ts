@@ -14,6 +14,14 @@ export function getDeptOptions() {
   })
 }
 
+export function getDeptUsers(parameter?: Record<string, unknown>) {
+  return request({
+    url: '/api/system/dept/users',
+    method: 'get',
+    params: parameter,
+  })
+}
+
 export function createDept(body: Record<string, unknown>) {
   return request({
     url: '/api/system/dept/create',

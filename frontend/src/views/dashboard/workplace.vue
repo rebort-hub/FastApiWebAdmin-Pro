@@ -117,6 +117,8 @@ import PageHeader from '@/components/PageHeader.vue'
 import { timeFix } from '@/utils/util';
 import { PlusOutlined } from '@ant-design/icons-vue';
 
+defineOptions({ name: 'Workplace' })
+
 const loading = ref(true);
 
 let timefix = timeFix();

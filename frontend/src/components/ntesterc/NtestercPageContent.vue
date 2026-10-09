@@ -2,12 +2,12 @@
   <main class="ntesterc-page-content">
     <div class="ntesterc-page-content__inner">
       <router-view v-slot="{ Component, route: currentRoute }">
-        <transition :name="transitionName" mode="out-in">
+        <transition :name="transitionName">
           <keep-alive :include="keepAliveInclude">
             <component
               :is="Component"
               v-if="Component"
-              :key="currentRoute.path"
+              :key="currentRoute.fullPath"
               class="ntesterc-page-content__view"
             />
           </keep-alive>
@@ -33,7 +33,7 @@ const { settings } = useNtestercSettings()
 const keepAliveInclude = computed(() => store.getters['worktab/keepAliveInclude'] as string[])
 
 const transitionName = computed(() => {
-  if (!settings.value.enablePageAnimation) return ''
+  if (!settings.value.enablePageAnimation) return 'ntesterc-page-none'
   return `ntesterc-page-${settings.value.pageTransition}`
 })
 </script>
@@ -56,6 +56,13 @@ const transitionName = computed(() => {
   &__view {
     min-height: 0;
   }
+}
+</style>
+
+<style lang="scss">
+.ntesterc-page-none-enter-active,
+.ntesterc-page-none-leave-active {
+  transition: none !important;
 }
 
 .ntesterc-page-fade-enter-active,
@@ -80,6 +87,17 @@ const transitionName = computed(() => {
 .ntesterc-page-slide-top-enter-from,
 .ntesterc-page-slide-top-leave-to {
   opacity: 0;
+}
+
+.ntesterc-page-fade-enter-to,
+.ntesterc-page-fade-leave-from,
+.ntesterc-page-slide-left-enter-to,
+.ntesterc-page-slide-left-leave-from,
+.ntesterc-page-slide-bottom-enter-to,
+.ntesterc-page-slide-bottom-leave-from,
+.ntesterc-page-slide-top-enter-to,
+.ntesterc-page-slide-top-leave-from {
+  opacity: 1;
 }
 
 .ntesterc-page-slide-left-enter-from {

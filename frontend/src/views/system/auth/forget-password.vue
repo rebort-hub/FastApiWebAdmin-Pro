@@ -201,9 +201,7 @@ const sendCode = async () => {
   state.sendingCode = true
   try {
     const response = await sendEmailCode({
-      username: state.step1.account,
-      title: '忘记密码验证码',
-      mail: state.step1.account,
+      email: state.step1.account,
     })
     if (response.data?.code === 200) {
       message.success('验证码已发送至绑定邮箱')

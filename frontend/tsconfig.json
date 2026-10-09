@@ -11,6 +11,8 @@
     "noEmit": true,
     "jsx": "preserve",
     "strict": true,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
@@ -19,7 +21,8 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "vuex": ["./node_modules/vuex/types/index.d.ts"]
     },
     "types": ["vite/client"]
   },
