@@ -3,10 +3,7 @@ import type { MenuRouteNode } from '@/types/menu'
 
 const modules = import.meta.glob('../views/**/*.vue')
 
-/**
- * 将菜单树扁平为布局下的叶子路由，避免「目录节点无组件」导致嵌套 router-view 切换白屏。
- * 侧边栏仍使用原始菜单树，不受影响。
- */
+
 export const generator = (routers: MenuRouteNode[]): RouteRecordRaw[] => {
   const routes: RouteRecordRaw[] = []
 

@@ -18,20 +18,28 @@
         </template>
         <NtestercTable :rowKey="record => record.id" :columns="columns" :data-source="menuTreeData" :row-selection="rowSelection" :loading="tableLoading" 
           :scroll="{ x: 500, y: 'calc(100vh - 350px)' }" :pagination="false" :style="{ minHeight: '700px' }">
-          <template v-slot:bodyCell="{ column, record, index }">
-            <template v-if="column.dataIndex === 'type'">
+          <template v-slot:bodyCell="{ column, record }">
+            <template v-if="column.dataIndex === 'icon'">
+              <span v-if="record.icon && resolveIcon(record.icon)" class="menu-icon-cell">
+                <component :is="resolveIcon(record.icon)" />
+              </span>
+              <span v-else class="menu-icon-cell is-empty">-</span>
+            </template>
+            <template v-else-if="column.dataIndex === 'type'">
               <a-tag :color="record.type === 1 ? 'blue' : (record.type === 2 ? 'green' : 'orange')">
                 {{ record.type === 1 ? '目录' : (record.type === 2 ? '功能' : '权限') }}
               </a-tag>
             </template>
-            <template v-if="column.dataIndex === 'available'">
-              <span><a-badge :color="record.available ? 'green' : 'red'" /> {{ record.available ? '启用' : '禁用' }}
+            <template v-else-if="column.dataIndex === 'available'">
+              <span>
+                <a-badge :color="record.available ? 'green' : 'red'" />
+                {{ record.available ? '启用' : '禁用' }}
               </span>
             </template>
-            <template v-if="column.dataIndex === 'operation'">
-              <div style="display: flex; gap: 15px;">
-                <a v-on:click="modalHandle('view', record)">查看</a>
-                <a v-on:click="modalHandle('update', record)">修改</a>
+            <template v-else-if="column.dataIndex === 'operation'">
+              <div class="ntesterc-table__actions">
+                <a @click="modalHandle('view', record)">查看</a>
+                <a @click="modalHandle('update', record)">修改</a>
                 <a-popconfirm title="确定删除吗？" ok-text="确定" cancel-text="取消" @confirm="deleteRow(record)">
                   <a>删除</a>
                 </a-popconfirm>
@@ -69,7 +77,11 @@
               </a-descriptions-item>
               <a-descriptions-item label="显示排序">{{ detailState.order }}</a-descriptions-item>
               <a-descriptions-item v-if="detailState.type !== 3" label="图标">
-                <a-button type="text" size="small" :icon="h(icons[detailState.icon])">{{ detailState.icon }}</a-button>
+                <span v-if="detailState.icon && resolveIcon(detailState.icon)" class="menu-icon-detail">
+                  <component :is="resolveIcon(detailState.icon)" />
+                  <span>{{ detailState.icon }}</span>
+                </span>
+                <span v-else>-</span>
               </a-descriptions-item>
               <a-descriptions-item label="父级菜单" :span="2">{{ detailState.parent_name }}</a-descriptions-item>
               <a-descriptions-item v-if="detailState.type !== 1" label="权限标识" :span="2">{{ detailState.permission }}</a-descriptions-item>
@@ -121,41 +133,74 @@
               ></a-tree-select>
             </a-form-item>
             <a-form-item name="icon" label="图标">
-              <a-popover placement="right" trigger="click">
+              <a-popover
+                v-model:open="iconPopoverOpen"
+                placement="bottomLeft"
+                trigger="click"
+                overlay-class-name="menu-icon-popover"
+              >
                 <template #content>
-                  <div class="icon-clear-btn-wrapper">
-                    <a-button :icon="h(ClearOutlined)" @click="iconClearClickHandle" danger>清空</a-button>
-                  </div>
-                  <a-form-item-rest>
-                    <a-input v-model:value="iconSelector.search" placeholder="搜索图标" allowClear />
-                  </a-form-item-rest>
-                  <a-tabs v-model:activeKey="iconSelector.activeTab" @change="iconTabHandleChange" tabPosition="left" style="margin-top: 20px;">
-                    <a-tab-pane v-for="(item, index) in iconDataSource" :key="index" :tab="item.type">
-                      <div class="icon-wrapper">
-                        <a-flex wrap="wrap" gap="small">
-                          <a-button
-                            v-for="item in iconData.slice((pagination.current-1) * pagination.pageSize, pagination.current * pagination.pageSize)"
-                            :icon="item.icon"
-                            @click="iconHandleClick(item)"
-                            :class="createState.icon === item.name ? 'active' : ''"
-                          />
-                        </a-flex>
-                      </div>
-                    </a-tab-pane>
-                  </a-tabs>
-                  <div class="icon-pagination-wrapper">
-                    <NtestercPagination
-                      :current="pagination.current"
-                      :page-size="pagination.pageSize"
-                      :total="pagination.total"
-                      :show-total="pagination.showTotal"
-                      :show-quick-jumper="pagination.showQuickJumper"
-                      :show-size-changer="false"
-                      @change="onIconPaginationChange"
-                    />
+                  <div class="icon-picker">
+                    <div class="icon-picker__toolbar">
+                      <a-form-item-rest>
+                        <a-input
+                          v-model:value="iconSelector.search"
+                          allow-clear
+                          placeholder="搜索图标名称"
+                          :prefix="h(SearchOutlined)"
+                        />
+                      </a-form-item-rest>
+                      <a-button type="link" danger :disabled="!createState.icon" @click="iconClearClickHandle">
+                        清空
+                      </a-button>
+                    </div>
+                    <a-tabs
+                      v-model:activeKey="iconSelector.activeTab"
+                      size="small"
+                      class="icon-picker__tabs"
+                      @change="iconTabHandleChange"
+                    >
+                      <a-tab-pane v-for="(group, index) in iconDataSource" :key="index" :tab="group.type" />
+                    </a-tabs>
+                    <div class="icon-picker__grid">
+                      <a-tooltip
+                        v-for="item in pagedIcons"
+                        :key="item.name"
+                        :title="item.name"
+                      >
+                        <button
+                          type="button"
+                          class="icon-picker__item"
+                          :class="{ 'is-active': createState.icon === item.name }"
+                          @click="iconHandleClick(item)"
+                        >
+                          <component :is="item.icon" />
+                        </button>
+                      </a-tooltip>
+                    </div>
+                    <div class="icon-picker__footer">
+                      <a-pagination
+                        size="small"
+                        :current="pagination.current"
+                        :page-size="pagination.pageSize"
+                        :total="pagination.total"
+                        :show-size-changer="false"
+                        :show-quick-jumper="false"
+                        :show-less-items="true"
+                        :show-total="iconPaginationTotal"
+                        @change="onIconPaginationChange"
+                      />
+                    </div>
                   </div>
                 </template>
-                <a-button :icon="createState.icon ? h(icons[createState.icon]): ''" style="width: 250px;">{{ createState.icon ? createState.icon: '请选择图标' }}</a-button>
+                <a-button class="icon-picker__trigger">
+                  <template v-if="createIconComp" #icon>
+                    <component :is="createIconComp" />
+                  </template>
+                  <span :class="{ 'icon-picker__placeholder': !createState.icon }">
+                    {{ createState.icon || '请选择图标' }}
+                  </span>
+                </a-button>
               </a-popover>
             </a-form-item>
             <a-form-item name="order" label="排序">
@@ -165,7 +210,6 @@
               <a-textarea v-model:value="createState.description" placeholder="请输入备注" :rows="4" allowClear />
             </a-form-item>
             <div v-if="createState.type !== 3">
-              <a-divider style="font-weight: 700">以下均为前端配置项</a-divider>
               <a-form-item name="route_name" label="路由名称" :rules="[{ required: createState.type !== 3 ? true : false, message: '请输入路由名称' }]">
                 <a-input v-model:value="createState.route_name" placeholder="请输入路由名称" allowClear></a-input>
               </a-form-item>
@@ -213,41 +257,74 @@
               ></a-tree-select>
             </a-form-item>
             <a-form-item name="icon" label="图标">
-              <a-popover placement="right" trigger="click">
+              <a-popover
+                v-model:open="iconPopoverOpen"
+                placement="bottomLeft"
+                trigger="click"
+                overlay-class-name="menu-icon-popover"
+              >
                 <template #content>
-                  <div class="icon-clear-btn-wrapper">
-                    <a-button :icon="h(ClearOutlined)" @click="iconClearClickHandle" danger>清空</a-button>
-                  </div>
-                  <a-form-item-rest>
-                    <a-input v-model:value="iconSelector.search" placeholder="搜索图标" allowClear />
-                  </a-form-item-rest>
-                  <a-tabs v-model:activeKey="iconSelector.activeTab" @change="iconTabHandleChange" tabPosition="left" style="margin-top: 20px;">
-                    <a-tab-pane v-for="(item, index) in iconDataSource" :key="index" :tab="item.type">
-                      <div class="icon-wrapper">
-                        <a-flex wrap="wrap" gap="small">
-                          <a-button
-                            v-for="item in iconData.slice((pagination.current-1) * pagination.pageSize, pagination.current * pagination.pageSize)"
-                            :icon="item.icon"
-                            @click="iconHandleClick(item)"
-                            :class="updateState.icon === item.name ? 'active' : ''"
-                          />
-                        </a-flex>
-                      </div>
-                    </a-tab-pane>
-                  </a-tabs>
-                  <div class="icon-pagination-wrapper">
-                    <NtestercPagination
-                      :current="pagination.current"
-                      :page-size="pagination.pageSize"
-                      :total="pagination.total"
-                      :show-total="pagination.showTotal"
-                      :show-quick-jumper="pagination.showQuickJumper"
-                      :show-size-changer="false"
-                      @change="onIconPaginationChange"
-                    />
+                  <div class="icon-picker">
+                    <div class="icon-picker__toolbar">
+                      <a-form-item-rest>
+                        <a-input
+                          v-model:value="iconSelector.search"
+                          allow-clear
+                          placeholder="搜索图标名称"
+                          :prefix="h(SearchOutlined)"
+                        />
+                      </a-form-item-rest>
+                      <a-button type="link" danger :disabled="!updateState.icon" @click="iconClearClickHandle">
+                        清空
+                      </a-button>
+                    </div>
+                    <a-tabs
+                      v-model:activeKey="iconSelector.activeTab"
+                      size="small"
+                      class="icon-picker__tabs"
+                      @change="iconTabHandleChange"
+                    >
+                      <a-tab-pane v-for="(group, index) in iconDataSource" :key="index" :tab="group.type" />
+                    </a-tabs>
+                    <div class="icon-picker__grid">
+                      <a-tooltip
+                        v-for="item in pagedIcons"
+                        :key="item.name"
+                        :title="item.name"
+                      >
+                        <button
+                          type="button"
+                          class="icon-picker__item"
+                          :class="{ 'is-active': updateState.icon === item.name }"
+                          @click="iconHandleClick(item)"
+                        >
+                          <component :is="item.icon" />
+                        </button>
+                      </a-tooltip>
+                    </div>
+                    <div class="icon-picker__footer">
+                      <a-pagination
+                        size="small"
+                        :current="pagination.current"
+                        :page-size="pagination.pageSize"
+                        :total="pagination.total"
+                        :show-size-changer="false"
+                        :show-quick-jumper="false"
+                        :show-less-items="true"
+                        :show-total="iconPaginationTotal"
+                        @change="onIconPaginationChange"
+                      />
+                    </div>
                   </div>
                 </template>
-                <a-button :icon="updateState.icon ? h(icons[updateState.icon]): ''" style="width: 250px;">{{ updateState.icon ? updateState.icon: '请选择图标' }}</a-button>
+                <a-button class="icon-picker__trigger">
+                  <template v-if="updateIconComp" #icon>
+                    <component :is="updateIconComp" />
+                  </template>
+                  <span :class="{ 'icon-picker__placeholder': !updateState.icon }">
+                    {{ updateState.icon || '请选择图标' }}
+                  </span>
+                </a-button>
               </a-popover>
             </a-form-item>
             <a-form-item name="order" label="排序">
@@ -263,7 +340,6 @@
               <a-textarea v-model:value="updateState.description" placeholder="请输入备注" :rows="4" allowClear />
             </a-form-item>
             <div v-if="updateState.type !== 3">
-              <a-divider style="font-weight: 700">以下均为前端配置项</a-divider>
               <a-form-item name="route_name" label="路由名称" :rules="[{ required: updateState.type !== 3 ? true : false, message: '请输入路由名称' }]">
                 <a-input v-model:value="updateState.route_name" placeholder="请输入路由名称" allowClear></a-input>
               </a-form-item>
@@ -295,16 +371,26 @@ import { ref, reactive, computed, unref, h, onMounted, watch } from 'vue';
 import PageHeader from '@/components/PageHeader.vue';
 import NtestercTable from '@/components/ntesterc/NtestercTable.vue';
 import NtestercTableCard from '@/components/ntesterc/NtestercTableCard.vue';
-import NtestercPagination from '@/components/ntesterc/NtestercPagination.vue';
 import { message, Modal } from 'ant-design-vue';
-import { getMenuList, createMenu, updateMenu, deleteMenu, batchEnableMenu, batchDisableMenu } from '@/api/menu'
+import { getMenuList, createMenu, updateMenu, deleteMenu, batchEnableMenu, batchDisableMenu } from '@/api/system/menu'
 import { listToTree, cloneDeep, isEmpty } from '@/utils/util';
 import type { TableColumnsType, MenuProps } from 'ant-design-vue';
-import * as icons from '@ant-design/icons-vue';
-import { PlusOutlined, DownOutlined, CheckOutlined, StopOutlined, ClearOutlined } from '@ant-design/icons-vue';
+import * as AntdIcons from '@ant-design/icons-vue';
+import { PlusOutlined, DownOutlined, CheckOutlined, StopOutlined, SearchOutlined } from '@ant-design/icons-vue';
+import type { Component } from 'vue'
 import type { tableDataType } from './types'
 import axios from "axios"
 
+type IconOption = { name: string; icon: Component }
+type IconGroup = { type: string; icons: IconOption[] }
+
+const iconMap = AntdIcons as unknown as Record<string, Component>
+
+function resolveIcon(name?: string | null): Component | null {
+  if (!name) return null
+  const comp = iconMap[name]
+  return typeof comp === 'object' || typeof comp === 'function' ? comp : null
+}
 
 const columns: TableColumnsType = [
   {
@@ -314,6 +400,8 @@ const columns: TableColumnsType = [
   {
     title: '图标',
     dataIndex: 'icon',
+    width: 80,
+    align: 'center',
   },
   {
     title: '显示排序',
@@ -354,10 +442,10 @@ const modalTitle = ref('');
 const modalSubmitLoading = ref(false);
 const createForm = ref();
 const updateForm = ref();
-const iconSelector = ref({ activeTab: 0, search: undefined });
-
-let iconDataSource = [];
-const iconData = ref([]);
+const iconSelector = ref<{ activeTab: number; search?: string }>({ activeTab: 0, search: undefined })
+const iconPopoverOpen = ref(false)
+const iconDataSource = ref<IconGroup[]>([])
+const iconData = ref<IconOption[]>([])
 
 const createState: tableDataType = reactive({
   name: '',
@@ -395,12 +483,19 @@ const detailState = ref<tableDataType>({});
 
 const pagination = reactive({
   current: 1,
-  pageSize: 70,
-  showQuickJumper: true,
-  showSizeChanger: false,
+  pageSize: 120,
   total: 0,
-  showTotal: (total: number, range: [number, number]) => `第 ${range[0]}-${range[1]} 条 / 总共 ${total} 条`
 })
+
+const iconPaginationTotal = (total: number) => `共 ${total}`
+
+const pagedIcons = computed(() => {
+  const start = (pagination.current - 1) * pagination.pageSize
+  return iconData.value.slice(start, start + pagination.pageSize)
+})
+
+const createIconComp = computed(() => resolveIcon(createState.icon))
+const updateIconComp = computed(() => resolveIcon(updateState.icon))
 
 function onIconPaginationChange(page: number, pageSize: number) {
   pagination.current = page
@@ -424,15 +519,20 @@ const loadingData = () => {
 onMounted(() => {
   loadingData();
   axios.get('/icons.json').then(response => {
-    response.data.forEach((item, index) => {
-      iconDataSource.push({ type: item.type, icons: [] });
-      item.icons.forEach(icon => {
-        iconDataSource[index].icons.push({ name: icon, icon: h(icons[icon]) })
+    const groups: IconGroup[] = []
+    response.data.forEach((item: { type: string; icons: string[] }) => {
+      const group: IconGroup = { type: item.type, icons: [] }
+      item.icons.forEach((iconName: string) => {
+        const iconComp = resolveIcon(iconName)
+        if (iconComp) {
+          group.icons.push({ name: iconName, icon: iconComp })
+        }
       })
-    });
-    iconData.value = iconDataSource[iconSelector.value.activeTab].icons;
-    pagination.total = iconData.value.length;
-    
+      groups.push(group)
+    })
+    iconDataSource.value = groups
+    iconData.value = groups[iconSelector.value.activeTab]?.icons || []
+    pagination.total = iconData.value.length
   }).catch(error => {
     console.log(error)
   })
@@ -472,6 +572,8 @@ const modalHandle = (modalType: string, record?: tableDataType) => {
     activeTab: 0,
     search: undefined
   }
+  iconPopoverOpen.value = false
+  iconSearch(undefined)
 }
 
 const deleteRow = (row: tableDataType) => {
@@ -574,32 +676,33 @@ watch(() => createState.type, (newType) => {
 
 watch(() => iconSelector.value.search, (newSearchField) => iconSearch(newSearchField));
 
-const iconSearch = (field) => {
-  let activeIcons = iconDataSource[iconSelector.value.activeTab].icons;
+const iconSearch = (field?: string) => {
+  const group = iconDataSource.value[iconSelector.value.activeTab]
+  let activeIcons = group?.icons || []
   if (field) {
-    activeIcons = activeIcons.filter(item => item.name.toLowerCase().includes(field.toLowerCase()));
+    activeIcons = activeIcons.filter(item => item.name.toLowerCase().includes(field.toLowerCase()))
   }
-
-  iconData.value = activeIcons;
-  pagination.current = 1;
-  pagination.total = iconData.value.length;
+  iconData.value = activeIcons
+  pagination.current = 1
+  pagination.total = iconData.value.length
 }
 
-const iconTabHandleChange = () => iconSearch(iconSelector.value.search);
+const iconTabHandleChange = () => iconSearch(iconSelector.value.search)
 
-const iconHandleClick = (values) => {
+const iconHandleClick = (values: IconOption) => {
   if (modalTitle.value === 'create') {
-    createState.icon = values.name;
+    createState.icon = values.name
   } else if (modalTitle.value === 'update') {
-    updateState.icon = values.name;
+    updateState.icon = values.name
   }
+  iconPopoverOpen.value = false
 }
 
 const iconClearClickHandle = () => {
   if (modalTitle.value === 'create') {
-    createState.icon = '';
+    createState.icon = ''
   } else if (modalTitle.value === 'update') {
-    updateState.icon = '';
+    updateState.icon = ''
   }
 }
 
@@ -609,25 +712,169 @@ const iconClearClickHandle = () => {
 .table-search-wrapper {
   margin-block-end: 16px;
 }
-.icon-wrapper {
-  min-width: 420px;
-  max-width: 420px;
-  min-height: 270px;
-  max-height: 270px;
-}
-.icon-clear-btn-wrapper {
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: flex-end;
-}
-.icon-pagination-wrapper {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
+
+.menu-icon-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--ant-color-text, rgba(0, 0, 0, 0.88));
+
+  &.is-empty {
+    color: var(--ant-color-text-quaternary, rgba(0, 0, 0, 0.25));
+    font-size: 14px;
+  }
 }
 
-.active {
-  color: #4096ff;
-  border-color: #4096ff;
+.menu-icon-detail {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+}
+
+.icon-picker__trigger {
+  display: inline-flex !important;
+  align-items: center;
+  min-width: 220px;
+  justify-content: flex-start;
+
+  :deep(.anticon) {
+    font-size: 16px;
+  }
+
+  .icon-picker__placeholder {
+    color: var(--ant-color-text-placeholder, rgba(0, 0, 0, 0.25));
+  }
+}
+
+.menu-icon-cell,
+.menu-icon-detail {
+  :deep(.anticon) {
+    display: inline-flex;
+    font-size: 18px;
+  }
+}
+</style>
+
+<style lang="scss">
+.menu-icon-popover {
+  .ant-popover-inner {
+    padding: 12px;
+  }
+
+  .ant-popover-inner-content {
+    padding: 0;
+  }
+}
+
+.icon-picker {
+  width: 488px;
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+
+    .ant-input-affix-wrapper,
+    .ant-input {
+      flex: 1;
+    }
+  }
+
+  &__tabs {
+    margin-bottom: 8px;
+
+    .ant-tabs-nav {
+      margin-bottom: 0 !important;
+    }
+
+    .ant-tabs-nav::before {
+      border-bottom-color: var(--ant-color-border-secondary, #f0f0f0);
+    }
+
+    .ant-tabs-tab {
+      padding: 8px 12px !important;
+    }
+
+    .ant-tabs-content-holder {
+      display: none;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(10, 40px);
+    grid-auto-rows: 40px;
+    gap: 8px;
+    justify-content: start;
+    align-content: start;
+    min-height: 296px;
+    max-height: 296px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  &__item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex: none;
+    padding: 0;
+    border: 1px solid var(--ant-color-border-secondary, #f0f0f0);
+    border-radius: 8px;
+    background: var(--ant-color-bg-container, #fff);
+    color: var(--ant-color-text, rgba(0, 0, 0, 0.88));
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s, box-shadow 0.2s;
+
+    .anticon {
+      font-size: 18px;
+    }
+
+    &:hover {
+      border-color: var(--ant-color-primary, #1677ff);
+      color: var(--ant-color-primary, #1677ff);
+    }
+
+    &.is-active {
+      border-color: var(--ant-color-primary, #1677ff);
+      color: var(--ant-color-primary, #1677ff);
+      background: var(--ant-color-primary-bg, #e6f4ff);
+      box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.12);
+    }
+  }
+
+  &__footer {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+    overflow: hidden;
+
+    .ant-pagination {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: flex-end;
+      margin: 0;
+      white-space: nowrap;
+    }
+
+    .ant-pagination-total-text {
+      flex-shrink: 0;
+      margin-inline-end: 8px;
+    }
+
+    .ant-pagination-item,
+    .ant-pagination-prev,
+    .ant-pagination-next {
+      flex-shrink: 0;
+    }
+  }
 }
 </style>

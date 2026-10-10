@@ -141,7 +141,7 @@ import PageHeader from '@/components/PageHeader.vue';
 import NtestercTable from '@/components/ntesterc/NtestercTable.vue';
 import NtestercTableCard from '@/components/ntesterc/NtestercTableCard.vue';
 import { Table, message, Modal } from 'ant-design-vue';
-import { getRoleList, createRole, updateRole, deleteRole, batchEnableRole, batchDisableRole } from '@/api/role'
+import { getRoleList, createRole, updateRole, deleteRole, batchEnableRole, batchDisableRole } from '@/api/system/role'
 import { cloneDeep, isEmpty } from '@/utils/util';
 import { PlusOutlined, DownOutlined, CheckOutlined, StopOutlined } from '@ant-design/icons-vue';
 import type { TableColumnsType, MenuProps } from 'ant-design-vue';

@@ -58,7 +58,7 @@ import { ref, reactive, computed, unref } from 'vue';
 import type { TableColumnsType } from 'ant-design-vue';
 import NtestercTable from '@/components/ntesterc/NtestercTable.vue';
 import NtestercTableCard from '@/components/ntesterc/NtestercTableCard.vue';
-import { getUserList } from '@/api/user'
+import { getUserList } from '@/api/system/user'
 import type { searchCreatorDataType, creatorTableDataType } from './types'
 
 

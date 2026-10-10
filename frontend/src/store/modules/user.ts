@@ -1,5 +1,5 @@
 import type { Module } from 'vuex'
-import { getCurrentUserInfo, type CurrentUserPayload } from '@/api/user'
+import { getCurrentUserInfo, type CurrentUserPayload } from '@/api/system/user'
 import type { MenuRouteNode } from '@/types/menu'
 import type { ApiResult } from '@/types/api'
 import type { RootState, UserBasicInfo, UserState } from '@/types/store'

@@ -95,7 +95,7 @@ import PageHeader from '@/components/PageHeader.vue';
 import NtestercTable from '@/components/ntesterc/NtestercTable.vue';
 import NtestercTableCard from '@/components/ntesterc/NtestercTableCard.vue';
 import type { TableColumnsType } from 'ant-design-vue';
-import { getLogList } from '@/api/log'
+import { getLogList } from '@/api/system/log'
 import { SearchOutlined } from '@ant-design/icons-vue';
 import type { searchDataType, tableDataType, creatorTableDataType } from './types'
 import SelectorModal from './SelectorModal.vue'

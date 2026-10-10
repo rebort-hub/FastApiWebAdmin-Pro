@@ -6,7 +6,7 @@ import { bindAppStore } from '@/utils/appStoreBridge'
 import Antd from 'ant-design-vue'
 import VChart from 'vue-echarts'
 import 'echarts'
-import '@/styles/ntesterc-theme.scss'
+import '@/styles'
 
 const app = createApp(App)
 app.use(router)

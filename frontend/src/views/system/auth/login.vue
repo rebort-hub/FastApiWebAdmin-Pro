@@ -102,7 +102,7 @@
 import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { UserOutlined, LockOutlined, GithubOutlined } from '@ant-design/icons-vue';
-import { login, getCaptcha } from "@/api/auth"
+import { login, getCaptcha } from "@/api/system/auth"
 import type { loginFormType, captchaStateType } from './types';
 import { save_token } from "@/utils/util"
 import md5 from "md5"

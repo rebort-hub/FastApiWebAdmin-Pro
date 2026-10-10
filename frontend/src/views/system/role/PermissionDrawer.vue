@@ -91,9 +91,9 @@
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue';
-import { getRolePermission, setPermission } from '@/api/role';
-import { getDeptOptions } from '@/api/dept';
-import { getMenuOptions } from '@/api/menu';
+import { getRolePermission, setPermission } from '@/api/system/role';
+import { getDeptOptions } from '@/api/system/dept';
+import { getMenuOptions } from '@/api/system/menu';
 import { listToTree } from '@/utils/util';
 import { message } from 'ant-design-vue';
 import { QuestionCircleOutlined } from '@ant-design/icons-vue';

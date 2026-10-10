@@ -4,7 +4,7 @@
 
     <div class="profile-page__hero">
       <div class="profile-page__identity">
-        <a-avatar :src="infoForm.avatar" :size="72" class="profile-page__avatar">
+        <a-avatar :src="infoForm.avatar" :size="80" class="profile-page__avatar">
           {{ avatarFallback }}
         </a-avatar>
         <div class="profile-page__meta">
@@ -38,7 +38,7 @@
         <a-tabs v-model:activeKey="activeTab">
           <a-tab-pane key="basic" tab="基本设置">
             <a-form
-              class="profile-page__form"
+              class="max-w-[880px]"
               layout="vertical"
               :model="infoForm"
               @finish="onInfoSubmit"
@@ -63,7 +63,7 @@
                   </a-form-item>
                 </a-col>
                 <a-col :xs="24" :md="12">
-                  <a-form-item label="邮箱" name="email">
+                  <a-form-item label="邮箱" name="email" :rules="[{ required: true, message: '请输入邮箱' }]">
                     <a-input v-model:value="infoForm.email" placeholder="请输入邮箱" allow-clear />
                   </a-form-item>
                 </a-col>
@@ -96,7 +96,7 @@
 
           <a-tab-pane key="password" tab="密码设置">
             <a-form
-              class="profile-page__form profile-page__form--password"
+              class="max-w-[420px]"
               layout="vertical"
               :model="passwordForm"
               @finish="onPasswordSubmit"
@@ -150,7 +150,7 @@ import storage from 'store'
 import md5 from 'md5'
 import PageHeader from '@/components/PageHeader.vue'
 import store from '@/store'
-import { updateCurrentUserInfo, changeCurrentUserPassword } from '@/api/user'
+import { updateCurrentUserInfo, changeCurrentUserPassword } from '@/api/system/user'
 
 defineOptions({ name: 'Profile' })
 
@@ -305,11 +305,12 @@ onActivated(loadProfile)
   &__hero {
     display: flex;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 20px;
     align-items: center;
     justify-content: space-between;
+    min-height: 128px;
     margin-bottom: 16px;
-    padding: 20px 24px;
+    padding: 28px 32px;
     background: var(--ntesterc-card-bg);
     border: 1px solid var(--ntesterc-border);
     border-radius: 12px;
@@ -318,7 +319,7 @@ onActivated(loadProfile)
 
   &__identity {
     display: flex;
-    gap: 16px;
+    gap: 20px;
     align-items: center;
     min-width: 0;
   }
@@ -337,13 +338,14 @@ onActivated(loadProfile)
     margin: 0;
     font-size: 20px;
     font-weight: 600;
-    line-height: 1.3;
+    line-height: 1.35;
     color: var(--ntesterc-text);
   }
 
   &__sub {
-    margin: 6px 0 10px;
+    margin: 8px 0 12px;
     font-size: 13px;
+    line-height: 1.5;
     color: var(--ntesterc-text-secondary);
 
     .dot {
@@ -354,7 +356,7 @@ onActivated(loadProfile)
   &__tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
   }
 
   &__card {
@@ -371,19 +373,12 @@ onActivated(loadProfile)
       margin-bottom: 20px;
     }
   }
-
-  &__form {
-    max-width: 880px;
-
-    &--password {
-      max-width: 420px;
-    }
-  }
 }
 
 @media (max-width: 768px) {
   .profile-page__hero {
     align-items: flex-start;
+    padding: 24px 20px;
   }
 }
 </style>

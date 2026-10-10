@@ -54,8 +54,8 @@
 import { ref, reactive, computed, unref } from 'vue';
 import { Table } from 'ant-design-vue';
 import NtestercTable from '@/components/ntesterc/NtestercTable.vue';
-import { getPositionOptions } from '@/api/position'
-import { getRoleOptions } from '@/api/role'
+import { getPositionOptions } from '@/api/system/position'
+import { getRoleOptions } from '@/api/system/role'
 import type { TableColumnsType } from 'ant-design-vue';
 import type { searchSelectDataType, roleSelectorType, positionSelectorType } from './types';
 

@@ -1,7 +1,7 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
 import storage from 'store'
 import router from '@/router'
-import { getNewToken } from '@/api/auth'
+import { getNewToken } from '@/api/system/auth'
 import { save_token } from './util'
 import notification from 'ant-design-vue/es/notification'
 import type { ApiResult } from '@/types/api'

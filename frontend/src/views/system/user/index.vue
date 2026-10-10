@@ -148,12 +148,20 @@
               allow-clear
             ></a-tree-select>
           </a-form-item>
-          <a-form-item name="role_ids" label="角色">
+          <a-form-item
+            name="role_ids"
+            label="角色"
+            :rules="[{ required: true, type: 'array', min: 1, message: '请选择角色' }]"
+          >
             <a-select v-model:value="createState.roleNames" :open="false" @click="selectModalHandle('role')" placeholder="请选择角色">
               <template #suffixIcon><SearchOutlined /></template>
             </a-select>
           </a-form-item>
-          <a-form-item name="position_ids" label="岗位">
+          <a-form-item
+            name="position_ids"
+            label="岗位"
+            :rules="[{ required: true, type: 'array', min: 1, message: '请选择岗位' }]"
+          >
             <a-select v-model:value="createState.positionNames" :open="false" @click="selectModalHandle('position')" placeholder="请选择岗位">
               <template #suffixIcon><SearchOutlined /></template>
             </a-select>
@@ -167,7 +175,7 @@
               <a-select-option :value="2">女</a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item name="email" label="邮箱">
+          <a-form-item name="email" label="邮箱" :rules="[{ required: true, message: '请输入邮箱' }]">
             <a-input v-model:value="createState.email" placeholder="请输入邮箱" allowClear></a-input>
           </a-form-item>
           <a-form-item name="mobile" label="联系电话">
@@ -205,12 +213,20 @@
               allow-clear
             ></a-tree-select>
           </a-form-item>
-          <a-form-item name="role_ids" label="角色">
+          <a-form-item
+            name="role_ids"
+            label="角色"
+            :rules="[{ required: true, type: 'array', min: 1, message: '请选择角色' }]"
+          >
             <a-select v-model:value="updateState.roleNames" :open="false" @click="selectModalHandle('role')" placeholder="请选择角色">
               <template #suffixIcon><SearchOutlined /></template>
             </a-select>
           </a-form-item>
-          <a-form-item name="position_ids" label="岗位">
+          <a-form-item
+            name="position_ids"
+            label="岗位"
+            :rules="[{ required: true, type: 'array', min: 1, message: '请选择岗位' }]"
+          >
             <a-select v-model:value="updateState.positionNames" :open="false" @click="selectModalHandle('position')" placeholder="请选择岗位">
               <template #suffixIcon><SearchOutlined /></template>
             </a-select>
@@ -227,7 +243,7 @@
               <a-select-option :value="2">女</a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item name="email" label="邮箱">
+          <a-form-item name="email" label="邮箱" :rules="[{ required: true, message: '请输入邮箱' }]">
             <a-input v-model:value="updateState.email" placeholder="请输入邮箱" allowClear></a-input>
           </a-form-item>
           <a-form-item name="mobile" label="联系电话">
@@ -262,8 +278,8 @@ import PageHeader from '@/components/PageHeader.vue';
 import NtestercTable from '@/components/ntesterc/NtestercTable.vue';
 import NtestercTableCard from '@/components/ntesterc/NtestercTableCard.vue';
 import { Table, message, Modal } from 'ant-design-vue';
-import { getUserList, createUser, updateUser, deleteUser, batchEnableUser, batchDisableUser } from '@/api/user'
-import { getDeptOptions } from '@/api/dept'
+import { getUserList, createUser, updateUser, deleteUser, batchEnableUser, batchDisableUser } from '@/api/system/user'
+import { getDeptOptions } from '@/api/system/dept'
 import { isEmpty, listToTree } from '@/utils/util';
 import { PlusOutlined, DownOutlined, CheckOutlined, StopOutlined, SearchOutlined } from '@ant-design/icons-vue';
 import type { TableColumnsType, MenuProps } from 'ant-design-vue';
@@ -634,9 +650,11 @@ const handleSelectorModalEvent = (
   if (modalTitle.value === 'create') {
     createState[ids_key] = selectedSelectorRowKeys;
     createState[names_key] = selectedSelectorRowNames.join(', ');
+    createForm.value?.validateFields([ids_key]).catch(() => undefined);
   } else {
     updateState[ids_key] = selectedSelectorRowKeys;
     updateState[names_key] = selectedSelectorRowNames.join(', ');
+    updateForm.value?.validateFields([ids_key]).catch(() => undefined);
   }
 }
 

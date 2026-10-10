@@ -101,7 +101,7 @@ import {
   deleteFile,
   deleteFileList,
   getFileDownloadUrl,
-} from '@/api/file'
+} from '@/api/system/file'
 
 const tableLoading = ref(false)
 const uploading = ref(false)

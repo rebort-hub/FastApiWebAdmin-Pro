@@ -1,0 +1,38 @@
+.ntesterc-app {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  color: var(--ntesterc-text);
+  background: var(--ntesterc-bg);
+}
+
+.ntesterc-app > .ntesterc-admin-layout {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.ntesterc-admin-layout {
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  color: var(--ntesterc-text);
+  background: var(--ntesterc-bg);
+}
+
+.ant-page-header {
+  padding: 20px 0;
+}
+
+.ant-modal .ant-modal-header {
+  margin-bottom: 20px;
+}
+
+.ntesterc-settings-drawer .ant-drawer-footer {
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--ntesterc-border);
+}

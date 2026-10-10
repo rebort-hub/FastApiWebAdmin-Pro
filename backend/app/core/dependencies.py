@@ -22,11 +22,7 @@ async def redis_getter(request: Request) -> Redis:
     return request.app.state.redis
 
 
-async def get_current_user(
-        request: Request,
-        token: str = Depends(OAuth2Schema),
-        session: AsyncSession = Depends(session_getter)
-) -> Auth:
+async def get_current_user(request: Request,token: str = Depends(OAuth2Schema),session: AsyncSession = Depends(session_getter)) -> Auth:
     token_payload = decode_jwt_token(token)
     if token_payload.is_refresh:
         raise CustomException(
@@ -59,14 +55,10 @@ class AuthPermission:
         self.permissions = set(permissions) if permissions else None
         self.check_data_scope = check_data_scope
 
-    async def __call__(
-            self,
-            request: Request,
-            auth: Auth = Depends(get_current_user),
-    ) -> Auth:
+    async def __call__(self,request: Request,auth: Auth = Depends(get_current_user)) -> Auth:
 
         auth.check_data_scope = self.check_data_scope
-
+        
         is_superuser = auth.user.is_superuser
         if is_superuser:
             return auth

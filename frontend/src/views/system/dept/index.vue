@@ -264,7 +264,7 @@ import {
 import PageHeader from '@/components/PageHeader.vue'
 import NtestercTable from '@/components/ntesterc/NtestercTable.vue'
 import NtestercTableCard from '@/components/ntesterc/NtestercTableCard.vue'
-import { getDeptList, getDeptUsers, createDept, updateDept, deleteDept } from '@/api/dept'
+import { getDeptList, getDeptUsers, createDept, updateDept, deleteDept } from '@/api/system/dept'
 import { cloneDeep, isEmpty, listToTree } from '@/utils/util'
 import type { treeDataType } from './types'
 

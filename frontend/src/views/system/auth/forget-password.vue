@@ -120,7 +120,7 @@ import { useRouter } from 'vue-router'
 import { message, notification } from 'ant-design-vue'
 import type { FormInstance, Rule } from 'ant-design-vue/es/form'
 import md5 from 'md5'
-import { sendEmailCode, forgetPassword } from '@/api/auth'
+import { sendEmailCode, forgetPassword } from '@/api/system/auth'
 import LoginLeftView from './LoginLeftView.vue'
 
 const router = useRouter()

@@ -1,0 +1,15 @@
+
+@layer theme, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+@source '../../**/*.{vue,ts,tsx}';
+
+@theme {
+  --color-ntesterc-primary: var(--ntesterc-primary);
+  --color-ntesterc-bg: var(--ntesterc-bg);
+  --color-ntesterc-card: var(--ntesterc-card-bg);
+  --color-ntesterc-text: var(--ntesterc-text);
+  --color-ntesterc-secondary: var(--ntesterc-text-secondary);
+  --color-ntesterc-border: var(--ntesterc-border);
+}
