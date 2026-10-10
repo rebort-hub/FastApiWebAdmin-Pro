@@ -26,7 +26,7 @@ export function getCaptcha() {
   })
 }
 
-export function sendEmailCode(data: { email: string }) {
+export function sendEmailCode(data: { username: string; title: string; mail: string }) {
   return request({
     url: '/api/system/auth/email/code',
     method: 'post',
