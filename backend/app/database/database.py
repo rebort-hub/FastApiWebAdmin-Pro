@@ -1,5 +1,6 @@
 ﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+#author：罗伯特
 """数据库表结构初始化"""
 
 from sqlalchemy import create_engine, inspect as sa_inspect, text

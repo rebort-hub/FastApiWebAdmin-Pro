@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+#author：罗伯特
 """邮件发送与邮箱验证码。"""
 
 import random
